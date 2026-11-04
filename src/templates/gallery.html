@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tinta Ritma - Pantun Gallery</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ url_for('static', filename='header.js') }}"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brandSage: { DEFAULT: '#97B3AE', dark: '#789792', light: '#b1c8c4' },
+                        brandMint: { DEFAULT: '#D2E0D3', light: '#e5eee6', dark: '#b3c9b5' },
+                        brandBlush: { DEFAULT: '#F0DDD6', dark: '#e3c9bf' },
+                        brandCoral: { DEFAULT: '#F2C3B9', hover: '#e5ab9f', dark: '#d99284' },
+                        brandTaupe: { DEFAULT: '#D6CBBF', dark: '#beaf9f', light: '#ebe3db' },
+                        deskParchment: '#f4ebe8',
+                        midnightViolet: '#422040',
+                        ebonyBinder: '#4b543b'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../style.css">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+     <!--<style>
+        body {
+            background-color: #f4ebe8;
+            background-image: radial-gradient(#d6cbbf 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+            font-family: 'Inter', sans-serif;
+            color: #422040;
+            min-height: 100vh;
+        }
+
+        .dark body {
+            background-color: #181614;
+            background-image: radial-gradient(#38302a 1.5px, transparent 1.5px);
+            color: #f4ebe8;
+        }
+
+       </style>-->
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- TOP HEADER -->
+    <app-header></app-header>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-6xl w-full mx-auto px-4 py-8 flex-grow">
+        
+        <!-- HERO SECTION -->
+        <section class="text-center mb-12 space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brandBlush dark:bg-midnightViolet border border-brandTaupe text-xs font-mono font-bold text-midnightViolet dark:text-brandMint shadow-sm">
+                <i class="fa-solid fa-feather-pointed text-brandCoral-dark"></i> Literary Collection
+            </div>
+            
+            <h2 class="font-serif text-3xl md:text-5xl font-bold text-midnightViolet dark:text-brandBlush tracking-tight">
+                Tinta Ritma
+            </h2>
+            <p class="max-w-xl mx-auto text-sm md:text-base text-midnightViolet/80 dark:text-brandBlush/80 leading-relaxed font-sans">
+                Explore classical Malay pantun literature through our interactive translation workbench. Select any sticky note below to begin translating.
+            </p>
+
+            <!-- MAIN ACTION BUTTON -->
+            <div class="pt-2">
+                <a href="{{ url_for('workbench') }}" class="inline-flex items-center gap-3 px-8 py-3.5 bg-brandCoral hover:bg-brandCoral-hover text-midnightViolet font-bold rounded-xl shadow-lg hover:shadow-xl transition-all border border-brandCoral-dark transform hover:-translate-y-0.5 text-base">
+                    <span>Open Translator Workbench</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </section>
+
+        <!-- STICKY NOTES GALLERY GRID -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 p-2">
+            
+            <!-- Sticky Note 1 (Blush) -->
+            <div onclick="openInWorkbench('Ten ringgit diberi hadiah,\n  Beli kain baju di Betawi;\nHancur badan dikandung tanah,\n  Budi yang baik dikenang juga.')"
+                 class="papery-note note-blush p-6 relative cursor-pointer transform -rotate-2 flex flex-col justify-between min-h-[225px]">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 tape-strip px-6 py-1 text-[10px] font-mono font-bold uppercase tracking-widest text-midnightViolet">
+                    PANTUN 01
+                </div>
+                <div class="handwriting-text mt-4">
+                    "Ten ringgit diberi hadiah,<br>
+                    &nbsp;&nbsp;Beli kain baju di Betawi;<br>
+                    Hancur badan dikandung tanah,<br>
+                    &nbsp;&nbsp;Budi yang baik dikenang juga."
+                </div>
+                <div class="mt-4 pt-3 border-t border-midnightViolet/15 flex justify-end items-center text-xs font-bold text-midnightViolet/80">
+                    <span>Translate</span> <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Sticky Note 2 (Mint) -->
+            <div onclick="openInWorkbench('Kalau tuan jalan ke hulu,\n  Carikan saya bunga kemboja;\nKalau tuan mati dahulu,\n  Nantikan saya di pintu syurga.')"
+                 class="papery-note note-mint p-6 relative cursor-pointer transform rotate-2 flex flex-col justify-between min-h-[225px]">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 tape-strip px-6 py-1 text-[10px] font-mono font-bold uppercase tracking-widest text-midnightViolet">
+                    PANTUN 02
+                </div>
+                <div class="handwriting-text mt-4">
+                    "Kalau tuan jalan ke hulu,<br>
+                    &nbsp;&nbsp;Carikan saya bunga kemboja;<br>
+                    Kalau tuan mati dahulu,<br>
+                    &nbsp;&nbsp;Nantikan saya di pintu syurga."
+                </div>
+                <div class="mt-4 pt-3 border-t border-midnightViolet/15 flex justify-end items-center text-xs font-bold text-midnightViolet/80">
+                    <span>Translate</span> <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Sticky Note 3 (Sage) -->
+            <div onclick="openInWorkbench('Berakit-rakit ke hulu,\n  Berenang-renang ke tepian;\nBersakit-sakit dahulu,\n  Bersenang-senang kemudian.')"
+                 class="papery-note note-sage p-6 relative cursor-pointer transform -rotate-1 flex flex-col justify-between min-h-[225px]">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 tape-strip px-6 py-1 text-[10px] font-mono font-bold uppercase tracking-widest text-midnightViolet">
+                    PANTUN 03
+                </div>
+                <div class="handwriting-text mt-4">
+                    "Berakit-rakit ke hulu,<br>
+                    &nbsp;&nbsp;Berenang-renang ke tepian;<br>
+                    Bersakit-sakit dahulu,<br>
+                    &nbsp;&nbsp;Bersenang-senang kemudian."
+                </div>
+                <div class="mt-4 pt-3 border-t border-midnightViolet/15 flex justify-end items-center text-xs font-bold text-midnightViolet/80">
+                    <span>Translate</span> <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Sticky Note 4 (Coral) -->
+            <div onclick="openInWorkbench('Pulau Pandan jauh ke tengah,\n  Gunung Daik bercabang tiga;\nHancur badan dikandung tanah,\n  Budi yang baik dikenang juga.')"
+                 class="papery-note note-coral p-6 relative cursor-pointer transform rotate-3 flex flex-col justify-between min-h-[225px]">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 tape-strip px-6 py-1 text-[10px] font-mono font-bold uppercase tracking-widest text-midnightViolet">
+                    PANTUN 04
+                </div>
+                <div class="handwriting-text mt-4">
+                    "Pulau Pandan jauh ke tengah,<br>
+                    &nbsp;&nbsp;Gunung Daik bercabang tiga;<br>
+                    Hancur badan dikandung tanah,<br>
+                    &nbsp;&nbsp;Budi yang baik dikenang juga."
+                </div>
+                <div class="mt-4 pt-3 border-t border-midnightViolet/15 flex justify-end items-center text-xs font-bold text-midnightViolet/80">
+                    <span>Translate</span> <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Sticky Note 5 (Taupe) -->
+            <div onclick="openInWorkbench('Yang kurik itu kundi,\n  Yang merah itu saga;\nYang baik itu budi,\n  Yang indah itu bahasa.')"
+                 class="papery-note note-taupe p-6 relative cursor-pointer transform -rotate-2 flex flex-col justify-between min-h-[225px]">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 tape-strip px-6 py-1 text-[10px] font-mono font-bold uppercase tracking-widest text-midnightViolet">
+                    PANTUN 05
+                </div>
+                <div class="handwriting-text mt-4">
+                    "Yang kurik itu kundi,<br>
+                    &nbsp;&nbsp;Yang merah itu saga;<br>
+                    Yang baik itu budi,<br>
+                    &nbsp;&nbsp;Yang indah itu bahasa."
+                </div>
+                <div class="mt-4 pt-3 border-t border-midnightViolet/15 flex justify-end items-center text-xs font-bold text-midnightViolet/80">
+                    <span>Translate</span> <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Sticky Note 6 (Parchment) -->
+            <div onclick="openInWorkbench('Pisang emas dibawa belayar,\n  Masak sebiji di atas peti;\nHutang emas boleh dibayar,\n  Hutang budi dibawa mati.')"
+                 class="papery-note note-parchment p-6 relative cursor-pointer transform rotate-1 flex flex-col justify-between min-h-[225px]">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 tape-strip px-6 py-1 text-[10px] font-mono font-bold uppercase tracking-widest text-midnightViolet">
+                    PANTUN 06
+                </div>
+                <div class="handwriting-text mt-4">
+                    "Pisang emas dibawa belayar,<br>
+                    &nbsp;&nbsp;Masak sebiji di atas peti;<br>
+                    Hutang emas boleh dibayar,<br>
+                    &nbsp;&nbsp;Hutang budi dibawa mati."
+                </div>
+                <div class="mt-4 pt-3 border-t border-midnightViolet/15 flex justify-end items-center text-xs font-bold text-midnightViolet/80">
+                    <span>Translate</span> <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full journal-footer text-brandBlush/80 mt-12 border-t border-brandCoral/30 transition-colors py-6 text-center text-xs font-mono">
+        &copy; 2026 Tinta Ritma Sdn Bhd • PustakaTranslate Literary Platform
+    </footer>
+
+    <!-- JAVASCRIPT NAVIGATION LOGIC -->
+    <script>
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+            });
+            
+
+        function openInWorkbench(pantunText) {
+            const encodedText = encodeURIComponent(pantunText);
+            window.location.href = `/workbench?pantun=${encodedText}`;
+        }
+    </script>
+</body>
+</html>

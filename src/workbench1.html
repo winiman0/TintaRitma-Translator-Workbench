@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tinta Ritma - Pantun Workbench</title>
+    <!-- Tailwind CSS CDN with Custom Color Extensions -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="header.js" defer></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brandSage: { DEFAULT: '#97B3AE', dark: '#789792', light: '#b1c8c4' },
+                        brandMint: { DEFAULT: '#D2E0D3', light: '#e5eee6', dark: '#b3c9b5' },
+                        brandBlush: { DEFAULT: '#F0DDD6', dark: '#e3c9bf' },
+                        brandCoral: { DEFAULT: '#F2C3B9', hover: '#e5ab9f', dark: '#d99284' },
+                        brandTaupe: { DEFAULT: '#D6CBBF', dark: '#beaf9f', light: '#ebe3db' },
+                        deskParchment: '#f4ebe8',
+                        midnightViolet: '#422040',
+                        ebonyBinder: '#4b543b'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Cinzel:wght@600;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start">
+
+    <!-- TOP NAVIGATION HEADER -->
+   <app-header></app-header>
+    <!-- CONTROL TOOLBAR (Req 1.1: Enter or Select Pantun Library) -->
+    <section class="max-w-4xl w-full px-2 md:px-6 pt-4 pb-2">
+        <div class="bg-brandSage/20 dark:bg-midnightViolet/30 border border-brandTaupe dark:border-brandTaupe/20 rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
+            <!-- Language Pickers -->
+            <div class="flex items-center gap-2 sm:gap-4 flex-1 min-w-[280px]">
+                <div class="flex-1">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-midnightViolet dark:text-brandMint mb-1">Source Language</label>
+                    <select id="sourceLang" onchange="syncLanguageLabel()" class="w-full bg-brandBlush dark:bg-[#1a1715] border border-brandTaupe dark:border-brandTaupe/30 rounded-lg px-3 py-2 text-sm font-semibold text-midnightViolet dark:text-brandBlush focus:outline-none focus:ring-2 focus:ring-brandCoral shadow-sm transition-all">
+                        <option value="ms" selected>Malay (Bahasa Melayu)</option>
+                        <option value="en">English</option>
+                        <option value="zh">Mandarin Chinese</option>
+                        <option value="ja">Japanese</option>
+                        <option value="ar">Arabic</option>
+                    </select>
+                </div>
+
+                <!-- Swap Button -->
+                <button id="swapBtn" onclick="swapLanguages()" class="mt-5 p-2 rounded-full bg-brandCoral text-midnightViolet hover:bg-brandCoral-hover transition-transform duration-300 shadow active:scale-95 flex-shrink-0 border border-brandCoral-dark font-bold" title="Swap Languages">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M8 3 4 7l4 4"></path><path d="M4 7h16"></path><path d="m16 21 4-4-4-4"></path><path d="M20 17H4"></path></svg>
+                </button>
+
+                <div class="flex-1">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-midnightViolet dark:text-brandMint mb-1">Target Language</label>
+                    <select id="targetLang" class="w-full bg-brandBlush dark:bg-[#1a1715] border border-brandTaupe dark:border-brandTaupe/30 rounded-lg px-3 py-2 text-sm font-semibold text-midnightViolet dark:text-brandBlush focus:outline-none focus:ring-2 focus:ring-brandCoral shadow-sm transition-all">
+                        <option value="en" selected>English</option>
+                        <option value="ms">Malay (Bahasa Melayu)</option>
+                        <option value="zh">Mandarin Chinese</option>
+                        <option value="ja">Japanese</option>
+                        <option value="ar">Arabic</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quick Presets -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <button onclick="loadPreset('quote')" class="text-xs bg-brandCoral text-midnightViolet hover:bg-brandCoral-hover dark:bg-brandCoral/80 dark:hover:bg-brandCoral px-3 py-2 rounded-lg border border-brandCoral-dark transition flex items-center gap-1.5 font-bold shadow-sm">
+                    <i class="fa-solid fa-quote-right"></i> Sample
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN BINDER FRAME -->
+    <div class="w-full max-w-4xl journal-binder p-4 md:p-6 relative my-2 border-2 border-ebonyBinder">
+
+        <!-- PAGE 01 (INPUT PAGE - Malay Pantun Source Text) -->
+        <section id="top-page-container" class="relative flex flex-col justify-between">
+            <form method="POST" action="/" class="relative flex flex-col justify-between" id="translation-form">
+            <div class="w-full h-4 bg-gradient-to-r from-midnightViolet via-midnightViolet/90 to-midnightViolet rounded-t-lg mb-1 flex items-center justify-between px-6 opacity-90 border-b border-brandTaupe/40">
+                <div class="w-3 h-1.5 bg-ebonyBinder rounded-full"></div>
+                <div class="text-[9px] uppercase tracking-widest text-brandMint font-mono">INPUT POETRY • PAGE 01</div>
+                <div class="w-3 h-1.5 bg-ebonyBinder rounded-full"></div>
+            </div>
+
+            <div class="journal-page rounded-lg p-6 md:p-8 relative flex-grow flex flex-col justify-between border border-brandTaupe">
+                <div class="flex justify-between items-start mb-2 border-b border-brandTaupe pb-2">
+                    <div>
+                        <span class="text-xs font-bold tracking-widest text-midnightViolet/70 dark:text-brandMint uppercase font-mono">ORIGINAL MALAY PANTUN / SOURCE</span>
+                        <h2 class="handwriting-heading text-xl md:text-2xl font-bold text-midnightViolet dark:text-brandBlush">INPUT TEXT</h2>
+                    </div>
+                    <div class="px-3 py-1 rounded bg-brandMint text-midnightViolet border border-brandSage text-xs font-mono font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-pen-nib text-midnightViolet"></i>
+                        <span id="source-lang-label">MALAY</span>
+                    </div>
+                </div>
+
+                <div class="relative my-2 flex-grow">
+                    <textarea id="source-text" name="pantun"
+                        class="w-full h-full min-h-[160px] bg-transparent handwriting-text focus:outline-none resize-none p-1 placeholder-midnightViolet/40 dark:placeholder-brandBlush/40"
+                        placeholder="Type or paste your Malay pantun manually here..."
+                        oninput="updateCharCount()">{{ pantun }}</textarea>
+                </div>
+                
+                <!-- send source and target languages along with the form -->
+                <input type="hidden" name="source_lang" id="hiddenSourceLang" value="ms">
+                <input type="hidden" name="target_lang" id="hiddenTargetLang" value="en">
+                
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-brandTaupe">
+                    <div class="text-xs text-midnightViolet/80 dark:text-brandMint font-mono" id="char-count">
+                        0 Characters | 0 Words
+                    </div>
+
+                    <button type="submit" id="translate-btn" onclick="executeTranslation()" class="px-6 py-2.5 bg-brandCoral hover:bg-brandCoral-hover text-midnightViolet font-bold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-2 transform active:scale-95 text-sm border border-brandCoral-dark">
+                        <span>TRANSLATE</span>
+                        <i class="fa-solid fa-circle-arrow-down animate-bounce"></i>
+                    </button>
+                </div>
+            </div>
+            </form>
+        </section>
+
+        <!-- MIDDLE SPIRAL RING SPINE -->
+        <div id="ring-spine" class="relative py-4 my-2 flex justify-around items-center z-20">
+            <div class="absolute inset-0 bg-midnightViolet shadow-inner rounded my-auto h-6 border-y border-ebonyBinder"></div>
+            <script>
+                for(let i=0; i<8; i++) {
+                    document.write(`
+                        <div class="relative flex flex-col items-center z-10">
+                            <div class="spiral-hole w-4 h-3 rounded-full mb-1"></div>
+                            <div class="spiral-ring w-3 h-10 -my-2 transform -rotate-3"></div>
+                            <div class="spiral-hole w-4 h-3 rounded-full mt-1"></div>
+                        </div>
+                    `);
+                }
+            </script>
+        </div>
+
+        <!-- PAGE 02 (RESULT & SIDE-BY-SIDE TRANSLATION WORKBENCH) -->
+        <section id="bottom-page-container" class="relative z-10">
+            <div class="relative flex">
+                <div id="bottom-paper" class="journal-page rounded-lg p-6 md:p-8 relative min-h-[460px] w-full flex flex-col justify-between border border-brandTaupe">
+                    
+                    <div class="absolute -top-3 right-12 tape-effect px-4 py-1 text-xs font-mono font-bold uppercase tracking-widest transform rotate-1 rounded-sm">
+                        Translation Result
+                    </div>
+
+                    <div class="flex justify-between items-start mb-2 border-b border-brandTaupe pb-2">
+                        <div>
+                            <span class="text-xs font-bold tracking-widest text-midnightViolet/70 dark:text-brandMint uppercase font-mono">ENGLISH TRANSLATION WORKSPACE</span>
+                            <h2 class="handwriting-heading text-xl md:text-2xl font-bold text-midnightViolet dark:text-brandBlush flex items-center gap-2">
+                                <span id="view-title">ENGLISH TRANSLATION</span>
+                                <span id="loading-spinner" class="hidden text-midnightViolet text-sm"><i class="fa-solid fa-spinner fa-spin"></i> Translating...</span>
+                            </h2>
+                        </div>
+                        
+                        <div id="active-tab-indicator" class="text-xs font-mono font-bold px-2.5 py-1 rounded bg-brandSage text-midnightViolet border border-brandSage-dark flex items-center gap-1.5">
+                            <i class="fa-solid fa-language"></i> Interactive View
+                        </div>
+                    </div>
+
+                    <div class="relative my-2 flex-grow min-h-[260px]">
+                        
+                        <!-- Panel 1: Editable English Translation (Req 1.4, 1.5, 1.7) -->
+                        <div id="panel-translation" class="h-full">
+                            <div class="text-[11px] font-mono text-midnightViolet/70 dark:text-brandMint mb-2 flex items-center justify-between">
+                                <span><i class="fa-solid fa-pen-to-square"></i> Editable Translation Draft:</span>
+                                <span class="text-[10px] italic">Edits are preserved when selecting alternative lines</span>
+                            </div>
+                            <div id="translated-text" class="handwriting-text whitespace-pre-wrap focus:outline-none p-2 border border-dashed border-brandTaupe/60 rounded-lg min-h-[160px] bg-white/30 dark:bg-black/20" contenteditable="true">
+Ten guilders are given as a prize,
+   Buy a cloak from Batavia's lands;
+Though we may die, our body dies,
+   Good deeds remain in people's hands.
+                            </div>
+
+                            <!-- Req 1.6 / 1.6: Alternative Line Generator Panel -->
+                            <div class="mt-4 p-3 rounded-xl bg-brandSage/20 dark:bg-black/30 border border-brandSage/50 text-xs font-sans space-y-2">
+                                <div class="flex items-center justify-between font-bold text-midnightViolet dark:text-brandCoral">
+                                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles text-brandCoral-dark"></i> Generate Alternative Lines (Req 1.6)</span>
+                                    <span class="text-[10px] font-mono bg-brandSage text-midnightViolet px-2 py-0.5 rounded">Line Explorer</span>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                                    <button onclick="applyLineAlternative(0)" class="p-2 bg-white/70 dark:bg-black/40 hover:bg-brandCoral/30 rounded-lg border border-brandTaupe/60 text-left transition">
+                                        <div class="font-bold text-[10px] text-midnightViolet dark:text-brandMint uppercase">Line 1 Alt (Rhyme Focus)</div>
+                                        <div class="text-xs italic truncate">"Ten coins of gold are awarded free,"</div>
+                                    </button>
+                                    <button onclick="applyLineAlternative(2)" class="p-2 bg-white/70 dark:bg-black/40 hover:bg-brandCoral/30 rounded-lg border border-brandTaupe/60 text-left transition">
+                                        <div class="font-bold text-[10px] text-midnightViolet dark:text-brandMint uppercase">Line 3 Alt (Poetic Flow)</div>
+                                        <div class="text-xs italic truncate">"Though mortal flesh should pass away,"</div>
+                                    </button>
+                                    <button onclick="applyLineAlternative(3)" class="p-2 bg-white/70 dark:bg-black/40 hover:bg-brandCoral/30 rounded-lg border border-brandTaupe/60 text-left transition">
+                                        <div class="font-bold text-[10px] text-midnightViolet dark:text-brandMint uppercase">Line 4 Alt (Direct Meaning)</div>
+                                        <div class="text-xs italic truncate">"Kind deeds forever endure and stay."</div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel 2: Cultural Explanations & Semantic Meaning (Req 1.3 / 1.3) -->
+                        <div id="panel-cultural" class="hidden h-full">
+                            <div class="bg-brandBlush/90 dark:bg-[#1c1917]/90 border border-brandTaupe dark:border-brandTaupe/30 rounded-lg p-4 text-xs font-sans text-midnightViolet dark:text-brandBlush space-y-4 shadow-inner">
+                                <div class="flex items-center justify-between border-b border-brandTaupe dark:border-brandTaupe/30 pb-2">
+                                    <span class="font-bold text-sm text-midnightViolet dark:text-brandBlush flex items-center gap-2">
+                                        Cultural Context & Poetic Analysis
+                                    </span>
+                                    <span class="bg-brandSage text-midnightViolet font-bold px-2.5 py-0.5 rounded text-xs border border-brandSage-dark">Pantun Structure: 4-Line Quatrain</span>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <div class="p-3 bg-white/60 dark:bg-[#28231f] rounded-lg border border-brandTaupe/50">
+                                        <h4 class="font-bold text-xs uppercase text-midnightViolet dark:text-brandCoral mb-1 flex items-center gap-1.5">
+                                            1. Pembayang
+                                        </h4>
+                                        <p class="text-xs leading-relaxed">
+                                            <em>"Ten Ringgit is given as a prize, buy a cloak from Batavia's lands..."</em><br>
+                                            Sets up the rhyme and natural imagery. Mentioning <strong>Batavia</strong> (historical Jakarta) reflects maritime trade and historical commerce in Malay literature.
+                                        </p>
+                                    </div>
+
+                                    <div class="p-3 bg-white/60 dark:bg-[#28231f] rounded-lg border border-brandTaupe/50">
+                                        <h4 class="font-bold text-xs uppercase text-midnightViolet dark:text-brandCoral mb-1 flex items-center gap-1.5">
+                                            2. Maksud
+                                        </h4>
+                                        <p class="text-xs leading-relaxed">
+                                            <em>"Though we may die, our body dies, good deeds remain in people's hands..."</em><br>
+                                            Delivers the moral lesson: Physical existence is temporary, but <strong>Budi</strong> (good deeds, virtue, and kindness) leaves an eternal legacy.
+                                        </p>
+                                    </div>
+
+                                    <div class="p-3 bg-brandSage/20 dark:bg-black/30 rounded-lg border border-brandSage/40">
+                                        <h4 class="font-bold text-xs uppercase text-midnightViolet dark:text-brandMint mb-1 flex items-center gap-1.5">
+                                            Cultural Symbolism & Metaphors
+                                        </h4>
+                                        <ul class="list-disc list-inside space-y-1 text-xs">
+                                            <li><strong>Budi:</strong> A central concept in Malay philosophy encompassing gratitude, virtue, and noble character.</li>
+                                            <li><strong>Kain Baju (Cloak/Attire):</strong> Symbolizes dignity, protection, and societal respect.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel 4: Diff Alignment -->
+                        <div id="panel-diff" class="hidden h-full">
+                            <div class="bg-brandBlush/80 dark:bg-[#1c1917]/90 border border-brandTaupe dark:border-brandTaupe/30 rounded-lg p-4 font-mono text-xs text-midnightViolet dark:text-brandBlush space-y-3">
+                                <div class="flex justify-between items-center border-b border-brandTaupe dark:border-brandTaupe/30 pb-2">
+                                    <span class="font-bold flex items-center gap-2">
+                                        <i class="fa-solid fa-code-compare"></i> Side-by-Side Line Alignment 
+                                    </span>
+                                    <span class="text-[10px] font-bold">4 Lines Aligned</span>
+                                </div>
+                                <div class="space-y-2 text-[11px]">
+                                    <div class="p-2 bg-brandBlush dark:bg-[#28231f] rounded border-l-4 border-brandCoral">
+                                        <span class="font-bold">L1:</span> "Ten ringgit diberi hadiah..." ➔ <span class="font-bold">"Ten guilders are given as a prize..."</span>
+                                    </div>
+                                    <div class="p-2 bg-brandBlush dark:bg-[#28231f] rounded border-l-4 border-brandSage">
+                                        <span class="font-bold">L2:</span> "Beli kain baju di Betawi..." ➔ <span class="font-bold">"Buy a cloak from Batavia's lands..."</span>
+                                    </div>
+                                    <div class="p-2 bg-brandBlush dark:bg-[#28231f] rounded border-l-4 border-brandCoral">
+                                        <span class="font-bold">L3:</span> "Hancur badan dikandung tanah..." ➔ <span class="font-bold">"Though we may die, our body dies..."</span>
+                                    </div>
+                                    <div class="p-2 bg-brandBlush dark:bg-[#28231f] rounded border-l-4 border-brandSage">
+                                        <span class="font-bold">L4:</span> "Budi yang baik dikenang juga." ➔ <span class="font-bold">"Good deeds remain in people's hands."</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Req 1.9 / 1.9: Copy Translation & Navigation -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-brandTaupe">
+                        <button onclick="copyToClipboard()" class="px-4 py-2 bg-brandSage text-midnightViolet hover:bg-brandSage-dark font-bold text-xs rounded-lg border border-brandSage-dark transition flex items-center gap-2 shadow-sm">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                        <button onclick="panToTop()" class="text-xs text-midnightViolet dark:text-brandMint hover:text-brandCoral-dark font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-up-long"></i> Back to Top
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RIGHT SIDE BOOKMARK TABS -->
+                <div class="flex flex-col gap-3 ml-2 pt-6">
+                    <button onclick="switchTab('translation')" id="tab-translation" class="bookmark-tab active has-tooltip relative w-12 h-12 rounded-r-lg bg-brandCoral dark:bg-brandCoral/90 text-midnightViolet flex items-center justify-center text-lg border-y border-r border-brandCoral-dark font-bold">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span class="tooltip-text absolute left-14 whitespace-nowrap bg-midnightViolet text-brandBlush text-xs px-2.5 py-1 rounded shadow-lg border border-brandTaupe z-30 font-mono">Translation Workbench</span>
+                    </button>
+
+                    <!-- Req 1.3: Cultural Explanations Tab -->
+                    <button onclick="switchTab('cultural')" id="tab-cultural" class="bookmark-tab has-tooltip relative w-12 h-12 rounded-r-lg bg-brandSage dark:bg-brandSage/90 text-midnightViolet flex items-center justify-center text-lg border-y border-r border-brandSage-dark font-bold">
+                        <i class="fa-solid fa-tree-city"></i>
+                        <span class="tooltip-text absolute left-14 whitespace-nowrap bg-midnightViolet text-brandBlush text-xs px-2.5 py-1 rounded shadow-lg border border-brandTaupe z-30 font-mono">Cultural Explanations (Req 1.3)</span>
+                    </button>
+
+                    <button onclick="switchTab('diff')" id="tab-diff" class="bookmark-tab has-tooltip relative w-12 h-12 rounded-r-lg bg-brandTaupe dark:bg-brandTaupe/90 text-midnightViolet flex items-center justify-center text-lg border-y border-r border-brandTaupe-dark font-bold">
+                        <i class="fa-solid fa-code-compare"></i>
+                        <span class="tooltip-text absolute left-14 whitespace-nowrap bg-midnightViolet text-brandBlush text-xs px-2.5 py-1 rounded shadow-lg border border-brandTaupe z-30 font-mono">Side-by-Side Diff (Req 1.4)</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full h-4 bg-gradient-to-r from-midnightViolet via-midnightViolet/90 to-midnightViolet rounded-b-lg mt-1 flex items-center justify-between px-6 opacity-90 border-t border-brandTaupe/40">
+                <div class="w-3 h-1.5 bg-ebonyBinder rounded-full"></div>
+                <div class="text-[9px] uppercase tracking-widest text-brandMint font-mono"> POETRY • PAGE 02</div>
+                <div class="w-3 h-1.5 bg-ebonyBinder rounded-full"></div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- RICH NOTEBOOK FOOTER (Includes Non-Functional AI Disclaimer) -->
+    <footer class="w-full journal-footer text-brandBlush/80 mt-12 border-t border-brandCoral/30 transition-colors">
+        <div class="max-w-4xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-mono">
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <img src="Image/logo1.png" alt="PustakaTranslate Logo" class="h-7 w-auto object-contain aspect-[16/9]" />
+                    <span class="font-serif text-sm font-bold tracking-tight text-brandBlush">Tinta Ritma</span>
+                </div>
+                <p class="text-[11px] leading-relaxed text-brandBlush/70 font-sans">
+                    Digital language platform preserving Malay pantuns and traditional literature.
+                </p>
+                <div class="text-[10px] text-brandMint pt-1">
+                    <i class="fa-solid fa-circle text-[8px] text-emerald-400 mr-1 animate-pulse"></i> Engine: 
+                </div>
+            </div>
+
+            <div class="space-y-2 border-t md:border-t-0 md:border-l border-brandTaupe/20 pt-4 md:pt-0 md:pl-6">
+                <div class="font-bold uppercase tracking-wider text-brandCoral text-[11px]">System Features</div>
+                <ul class="space-y-1 text-[11px] text-brandBlush/80">
+                    <li>• Pantun Library & Manual Entry</li>
+                    <li>• Line-by-Line Alternative Suggestions</li>
+                    <li>• Cultural Context & Pembayang Analysis</li>
+                </ul>
+            </div>
+
+            <!-- NFR: Translation Limitation Disclaimer -->
+            <div class="space-y-2 border-t md:border-t-0 md:border-l border-brandTaupe/20 pt-4 md:pt-0 md:pl-6">
+                <div class="font-bold uppercase tracking-wider text-brandCoral text-[11px]">Notice & Disclaimer</div>
+                <p class="text-[10px] leading-relaxed text-brandBlush/70">
+                    AI-generated translations and cultural explanations may contain inaccuracies. Poetic nuance and traditional meanings should be manually reviewed.
+                </p>
+            </div>
+        </div>
+
+        <div class="border-t border-brandTaupe/10 bg-black/20 py-3 text-center text-[10px] text-brandBlush/50 font-mono">
+            &copy; 2026 Tinta Ritma Sdn Bhd • PustakaTranslate Literary Platform
+        </div>
+    </footer>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-midnightViolet text-brandBlush px-4 py-2.5 rounded-lg shadow-xl border border-brandCoral text-xs font-mono transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2 z-50">
+        <i class="fa-solid fa-circle-info text-brandCoral"></i>
+        <span id="toast-msg">Notification</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        document.getElementById('translation-form').addEventListener('submit', function() {
+            document.getElementById('hiddenSourceLang').value = document.getElementById('sourceLang').value;
+            document.getElementById('hiddenTargetLang').value = document.getElementById('targetLang').value;
+        });
+
+        const pantunDatabase = {
+            budi: {
+                text: "Ten ringgit diberi hadiah,\n  Beli kain baju di Betawi;\nHancur badan dikandung tanah,\n  Budi yang baik dikenang juga.",
+                translation: "Ten guilders are given as a prize,\n  Buy a cloak from Batavia's lands;\nThough we may die, our body dies,\n  Good deeds remain in people's hands.",
+                alts: [
+                    "Ten coins of gold are awarded free,",
+                    "Purchase fine silk from Batavia's sea;",
+                    "Though mortal flesh should pass away,",
+                    "Kind deeds forever endure and stay."
+                ]
+            },
+            kasih: {
+                text: "Kalau tuan jalan ke hulu,\n  Carikan saya bunga kemboja;\nKalau tuan mati dahulu,\n  Nantikan saya di pintu syurga.",
+                translation: "If upstream you should journey far,\n  Find me a frangipani flower;\nIf you should cross the mortal bar,\n  Wait for me at heaven's bower.",
+                alts: [
+                    "If to the highlands your journey bends,",
+                    "Pick me a bloom of sweet perfume;",
+                    "If fate your life before mine ends,",
+                    "Wait by the gates of paradise bloom."
+                ]
+            },
+            nasihat: {
+                text: "Berakit-rakit ke hulu,\n  Berenang-renang ke tepian;\nBersakit-sakit dahulu,\n  Bersenang-senang kemudian.",
+                translation: "Rafting upstream through the stream,\n  Swimming to the shore again;\nEndure the pain to reach your dream,\n  Joy will follow after pain.",
+                alts: [
+                    "Rowing a raft against the tide,",
+                    "Swimming towards the quiet shore;",
+                    "Struggle today with courage and pride,",
+                    "Ease shall be yours forevermore."
+                ]
+            },
+            alam: {
+                text: "Pulau Pandan jauh ke tengah,\n  Gunung Daik bercabang tiga;\nHancur badan dikandung tanah,\n  Budi yang baik dikenang juga.",
+                translation: "Pandan Island far out to sea,\n  Mount Daik splits in triple peak;\nThough bodies crumble under tree,\n  Noble deeds are what men speak.",
+                alts: [
+                    "Pandan Island lies far out deep,",
+                    "Mount Daik rises with triple crest;",
+                    "Though in the earth our body sleep,",
+                    "Virtue endures within the breast."
+                ]
+            }
+        };
+
+        const presets = {
+            quote: {
+                sourceLang: 'en',
+                targetLang: 'ms',
+                text: "The rain washed over the neon-lit alleyways. Every clue led to another question, buried deep within this forgotten journal.",
+                translation: "Hujan membasahi lorong-lorong berlampu neon. Setiap petunjuk membawa kepada soalan lain, tertanam jauh di dalam jurnal yang terlupa ini."
+            }
+        };
+
+        const langLabels = { ms: 'MALAY', en: 'ENGLISH', zh: 'MANDARIN', ja: 'JAPANESE', ar: 'ARABIC' };
+
+        window.onload = function() {
+            loadSelectedPantun('budi');
+            adjustPageHeight();
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            updateScrollAngle();
+        };
+
+        window.onresize = adjustPageHeight;
+
+        function adjustPageHeight() {
+            const headerHeight = document.querySelector('header').offsetHeight;
+            const toolbarHeight = document.querySelector('section').offsetHeight;
+            const ringSpine = document.getElementById('ring-spine');
+            const spineHeight = ringSpine ? ringSpine.offsetHeight : 48;
+            
+            const availableHeight = window.innerHeight - headerHeight - toolbarHeight - spineHeight - 40;
+            const topPage = document.getElementById('top-page-container');
+            if (availableHeight > 280) topPage.style.height = `${availableHeight}px`;
+            else topPage.style.height = '360px';
+        }
+
+        window.addEventListener('scroll', updateScrollAngle, { passive: true });
+
+        function updateScrollAngle() {
+            const bottomContainer = document.getElementById('bottom-page-container');
+            const ringSpine = document.getElementById('ring-spine');
+            if (!ringSpine || !bottomContainer) return;
+
+            const spineRect = ringSpine.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+
+            let progress = (viewportHeight - spineRect.top) / (viewportHeight * 0.75);
+            progress = Math.max(0, Math.min(1, progress));
+
+            const angle = -105 * (1 - progress);
+            const opacity = 0.2 + (0.8 * progress);
+            const translateY = -20 * (1 - progress);
+
+            bottomContainer.style.transform = `rotateX(${angle}deg) translateY(${translateY}px)`;
+            bottomContainer.style.opacity = opacity;
+        }
+
+        
+
+        function swapLanguages() {
+            const src = document.getElementById('sourceLang');
+            const tgt = document.getElementById('targetLang');
+            const temp = src.value;
+            src.value = tgt.value;
+            tgt.value = temp;
+            syncLanguageLabel();
+            showToast("Swapped languages!");
+        }
+
+        function syncLanguageLabel() {
+            const val = document.getElementById('sourceLang').value;
+            document.getElementById('source-lang-label').innerText = langLabels[val] || 'SOURCE';
+        }
+
+        function updateCharCount() {
+            const val = document.getElementById('source-text').value;
+            const chars = val.length;
+            const words = val.trim() ? val.trim().split(/\s+/).length : 0;
+            document.getElementById('char-count').innerText = `${chars} Characters | ${words} Words`;
+        }
+
+        function loadSelectedPantun(key) {
+            const data = pantunDatabase[key];
+            if (!data) return;
+
+            document.getElementById('sourceLang').value = 'ms';
+            document.getElementById('targetLang').value = 'en';
+            syncLanguageLabel();
+
+            document.getElementById('source-text').value = data.text;
+            document.getElementById('translated-text').innerText = data.translation;
+            updateCharCount();
+            showToast(`Loaded ${key.toUpperCase()} pantun`);
+        }
+
+        function loadPreset(type) {
+            const data = presets[type];
+            if(!data) return;
+            document.getElementById('sourceLang').value = data.sourceLang;
+            document.getElementById('targetLang').value = data.targetLang;
+            syncLanguageLabel();
+            document.getElementById('source-text').value = data.text;
+            document.getElementById('translated-text').innerText = data.translation;
+            updateCharCount();
+            showToast("Loaded sample prose");
+        }
+
+        function executeTranslation() {
+            const input = document.getElementById('source-text').value;
+            if(!input.trim()) {
+                showToast("Please enter a Malay pantun first.");
+                return;
+            }
+
+            const spinner = document.getElementById('loading-spinner');
+            spinner.classList.remove('hidden');
+
+            setTimeout(() => {
+                spinner.classList.add('hidden');
+                switchTab('translation');
+                panToBottom();
+                showToast("Pantun translated!");
+            }, 600);
+        }
+
+        function applyLineAlternative(lineIndex) {
+            const currentPantunKey = document.getElementById('pantunPicker').value || 'budi';
+            const data = pantunDatabase[currentPantunKey];
+            if (!data || !data.alts[lineIndex]) return;
+
+            const textContainer = document.getElementById('translated-text');
+            let lines = textContainer.innerText.split('\n');
+            
+            if (lines.length > lineIndex) {
+                lines[lineIndex] = data.alts[lineIndex];
+                textContainer.innerText = lines.join('\n');
+                showToast(`Applied alternative for Line ${lineIndex + 1}!`);
+            }
+        }
+
+        function switchTab(tabName) {
+            const panels = ['translation', 'cultural', 'diff'];
+            panels.forEach(p => {
+                const panelEl = document.getElementById(`panel-${p}`);
+                const tabEl = document.getElementById(`tab-${p}`);
+                if (panelEl && tabEl) {
+                    if (p === tabName) {
+                        panelEl.classList.remove('hidden');
+                        tabEl.classList.add('active');
+                    } else {
+                        panelEl.classList.add('hidden');
+                        tabEl.classList.remove('active');
+                    }
+                }
+            });
+
+            const titles = {
+                translation: 'TRANSLATION',
+                cultural: 'CULTURAL EXPLANATIONS',
+                diff: 'LINE-BY-LINE ALIGNMENT'
+            };
+            document.getElementById('view-title').innerText = titles[tabName] || 'TRANSLATION';
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('translated-text').innerText;
+            navigator.clipboard.writeText(text);
+            showToast("Copied translation to clipboard!");
+        }
+
+        function panToBottom() {
+            document.getElementById('ring-spine').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function panToTop() {
+            document.getElementById('top-page-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 2500);
+        }
+    </script>
+</body>
+</html>

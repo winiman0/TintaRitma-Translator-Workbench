@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tinta Ritma - Translator Workbench</title>
+    <!-- Tailwind CSS CDN with Custom Color Extensions -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        // Custom Palette Extensions
+                        brandSage: {
+                            DEFAULT: '#97B3AE',
+                            dark: '#789792',
+                            light: '#b1c8c4'
+                        },
+                        brandMint: {
+                            DEFAULT: '#D2E0D3',
+                            light: '#e5eee6',
+                            dark: '#b3c9b5'
+                        },
+                        brandBlush: {
+                            DEFAULT: '#F0DDD6',
+                            dark: '#e3c9bf'
+                        },
+                        brandCoral: {
+                            DEFAULT: '#F2C3B9',
+                            hover: '#e5ab9f',
+                            dark: '#d99284'
+                        },
+                        brandTaupe: {
+                            DEFAULT: '#D6CBBF',
+                            dark: '#beaf9f',
+                            light: '#ebe3db'
+                        },
+                        // Structural Base Tones
+                        deskParchment: '#f4ebe8',
+                        midnightViolet: '#422040',
+                        ebonyBinder: '#4b543b'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Desk Outer Background */
+        body {
+            background-color: #f4ebe8;
+            background-image: radial-gradient(#d6cbbf 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            color: #422040;
+        }
+
+        .dark body {
+            background-color: #181614;
+            background-image: radial-gradient(#38302a 1.5px, transparent 1.5px);
+            color: #f4ebe8;
+        }
+
+        /* Journal Outer Binder */
+        .journal-binder {
+            background: #4b543b;
+            border-radius: 14px;
+            box-shadow: 0 25px 50px -12px rgba(66, 32, 64, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.15);
+            perspective: 1400px;
+        }
+
+        .dark .journal-binder {
+            background: #20241a;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), inset 0 2px 4px rgba(255, 255, 255, 0.08);
+            border-color: #2e3526;
+        }
+
+        /* Paper Pages Surface */
+        .journal-page {
+            background-color: #F0DDD6;
+            background-image: linear-gradient(#D6CBBF 1px, transparent 1px);
+            background-size: 100% 28px;
+            box-shadow: inset 0 0 30px rgba(151, 179, 174, 0.25), 0 4px 10px rgba(66, 32, 64, 0.12);
+            line-height: 28px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dark .journal-page {
+            background-color: #24211e;
+            background-image: linear-gradient(#3a342f 1px, transparent 1px);
+            box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.75), 0 6px 16px rgba(0, 0, 0, 0.6);
+            border-color: #3d3630;
+        }
+
+        /* Typography */
+        .handwriting-heading {
+            font-family: 'Cinzel', serif;
+        }
+        .handwriting-text {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            line-height: 28px;
+            color: #422040;
+        }
+        .dark .handwriting-text {
+            color: #f4ebe8;
+        }
+
+        /* Middle Spiral Rings */
+        .spiral-ring {
+            background: linear-gradient(90deg, #F2C3B9 0%, #D2E0D3 40%, #ffffff 50%, #97B3AE 70%, #d99284 100%);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.8);
+            border-radius: 4px;
+        }
+        .dark .spiral-ring {
+            background: linear-gradient(90deg, #d98f82 0%, #a1b2a2 40%, #edd8d1 50%, #728f8a 70%, #b86b5e 100%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.5);
+        }
+        .spiral-hole {
+            background: #231222;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+        }
+        .dark .spiral-hole {
+            background: #110e11;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.95);
+        }
+
+        /* 3D Scroll Physics Engine Container */
+        #bottom-page-container {
+            transform-origin: top center;
+            will-change: transform, opacity;
+            transition: transform 0.05s linear;
+        }
+
+        /* Bookmark Tabs */
+        .bookmark-tab {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 2px 3px 6px rgba(66, 32, 64, 0.2);
+            user-select: none;
+        }
+        .dark .bookmark-tab {
+            box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.6);
+        }
+        .bookmark-tab:hover {
+            transform: translateX(6px) scale(1.03);
+        }
+        .bookmark-tab.active {
+            transform: translateX(10px);
+            box-shadow: 4px 4px 10px rgba(66, 32, 64, 0.3);
+        }
+        .dark .bookmark-tab.active {
+            box-shadow: 4px 6px 14px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Sticky Tape Label Effect */
+        .tape-effect {
+            background: rgba(242, 195, 185, 0.85);
+            backdrop-filter: blur(2px);
+            border-left: 2px dashed rgba(66, 32, 64, 0.3);
+            border-right: 2px dashed rgba(66, 32, 64, 0.3);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            color: #422040;
+        }
+        .dark .tape-effect {
+            background: rgba(242, 195, 185, 0.22);
+            border-left: 2px dashed rgba(244, 235, 232, 0.3);
+            border-right: 2px dashed rgba(244, 235, 232, 0.3);
+            color: #F0DDD6;
+        }
+
+        /* Footer styling */
+        .journal-footer {
+            background: #321831;
+            box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+        .dark .journal-footer {
+            background: #120e12;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+
+        /* Tooltip styling */
+        .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .has-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start">
+
+    <!-- TOP NAVIGATION HEADER -->
+    <header class="w-full sticky top-0 z-40 bg-midnightViolet text-brandBlush backdrop-blur-md border-b border-brandTaupe/40 px-4 lg:px-8 py-3 flex items-center justify-between shadow-md transition-colors">
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+            <img src="logo1.png" alt="PustakaTranslate Logo" class="h-8 w-auto object-contain aspect-[16/9]" />
+            <div>
+                <h1 class="font-serif text-lg font-bold tracking-tight text-brandBlush">Tinta Ritma</h1>
+                <p class="text-[10px] tracking-widest uppercase font-semibold text-brandMint">Workbench Translator</p>
+            </div>
+        </div>
+
+        <!-- Right Side Header Controls (Nav Links + Dark Mode Toggle) -->
+        <div class="flex items-center gap-4 sm:gap-6">
+            <nav class="flex items-center gap-4 sm:gap-6 text-sm font-medium text-brandBlush/90">
+                <button onclick="openModal('aboutModal')" class="hover:text-brandCoral transition-colors flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-info"></i> About
+                </button>
+                <button onclick="openModal('settingsModal')" class="hover:text-brandCoral transition-colors flex items-center gap-1.5">
+                    <i class="fa-solid fa-sliders"></i> Settings
+                </button>
+                <button onclick="openModal('helpModal')" class="hover:text-brandCoral transition-colors flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-question"></i> Help
+                </button>
+            </nav>
+
+            <!-- Dark Mode Toggle -->
+            <button id="darkModeBtn" onclick="toggleDarkMode()" class="p-2.5 rounded-full bg-midnightViolet/80 text-brandCoral hover:bg-midnightViolet transition-all shadow-sm border border-brandCoral/40" title="Toggle Theme">
+                <svg id="darkIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path></svg>
+                <svg id="lightIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 hidden"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTROL TOOLBAR (Language Selectors & Quick Presets) -->
+    <section class="max-w-4xl w-full px-2 md:px-6 pt-4 pb-2">
+        <div class="bg-brandSage/20 dark:bg-midnightViolet/30 border border-brandTaupe dark:border-brandTaupe/20 rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
+            <!-- Language Pickers -->
+            <div class="flex items-center gap-2 sm:gap-4 flex-1 min-w-[280px]">
+                <div class="flex-1">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-midnightViolet dark:text-brandMint mb-1">Source Language</label>
+                    <select id="sourceLang" onchange="syncLanguageLabel()" class="w-full bg-brandBlush dark:bg-[#1a1715] border border-brandTaupe dark:border-brandTaupe/30 rounded-lg px-3 py-2 text-sm font-semibold text-midnightViolet dark:text-brandBlush focus:outline-none focus:ring-2 focus:ring-brandCoral shadow-sm transition-all">
+                        <option value="ms" selected>Malay (Bahasa Melayu)</option>
+                        <option value="en">English</option>
+                        <option value="zh">Mandarin Chinese</option>
+                        <option value="ja">Japanese</option>
+                        <option value="ar">Arabic</option>
+                    </select>
+                </div>
+
+                <!-- Swap Button -->
+                <button id="swapBtn" onclick="swapLanguages()" class="mt-5 p-2 rounded-full bg-brandCoral text-midnightViolet hover:bg-brandCoral-hover transition-transform duration-300 shadow active:scale-95 flex-shrink-0 border border-brandCoral-dark font-bold" title="Swap Languages">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M8 3 4 7l4 4"></path><path d="M4 7h16"></path><path d="m16 21 4-4-4-4"></path><path d="M20 17H4"></path></svg>
+                </button>
+
+                <div class="flex-1">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-midnightViolet dark:text-brandMint mb-1">Target Language</label>
+                    <select id="targetLang" class="w-full bg-brandBlush dark:bg-[#1a1715] border border-brandTaupe dark:border-brandTaupe/30 rounded-lg px-3 py-2 text-sm font-semibold text-midnightViolet dark:text-brandBlush focus:outline-none focus:ring-2 focus:ring-brandCoral shadow-sm transition-all">
+                        <option value="en" selected>English</option>
+                        <option value="ms">Malay (Bahasa Melayu)</option>
+                        <option value="zh">Mandarin Chinese</option>
+                        <option value="ja">Japanese</option>
+                        <option value="ar">Arabic</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quick Presets -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <button onclick="loadPreset('quote')" class="text-xs bg-brandCoral text-midnightViolet hover:bg-brandCoral-hover dark:bg-brandCoral/80 dark:hover:bg-brandCoral px-3 py-2 rounded-lg border border-brandCoral-dark transition flex items-center gap-1.5 font-bold shadow-sm">
+                    <i class="fa-solid fa-quote-right"></i> Sample
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN BINDER FRAME -->
+    <div class="w-full max-w-4xl journal-binder p-4 md:p-6 relative my-2 border-2 border-ebonyBinder">
+
+        <!-- PAGE 01 (INPUT PAGE) -->
+        <section id="top-page-container" class="relative flex flex-col justify-between">
+            <div class="w-full h-4 bg-gradient-to-r from-midnightViolet via-midnightViolet/90 to-midnightViolet rounded-t-lg mb-1 flex items-center justify-between px-6 opacity-90 border-b border-brandTaupe/40">
+                <div class="w-3 h-1.5 bg-ebonyBinder rounded-full"></div>
+                <div class="text-[9px] uppercase tracking-widest text-brandMint font-mono">INPUT JOURNAL • PAGE 01</div>
+                <div class="w-3 h-1.5 bg-ebonyBinder rounded-full"></div>
+            </div>
+
+            <div class="journal-page rounded-lg p-6 md:p-8 relative flex-grow flex flex-col justify-between border border-brandTaupe">
+                <div class="flex justify-between items-start mb-2 border-b border-brandTaupe pb-2">
+                    <div>
+                        <span class="text-xs font-bold tracking-widest text-midnightViolet/70 dark:text-brandMint uppercase font-mono">DOCUMENT / SOURCE TEXT</span>
+                        <h2 class="handwriting-heading text-xl md:text-2xl font-bold text-midnightViolet dark:text-brandBlush">ORIGINAL</h2>
+                    </div>
+                    <div class="px-3 py-1 rounded bg-brandMint text-midnightViolet border border-brandSage text-xs font-mono font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-pen-nib text-midnightViolet"></i>
+                        <span id="source-lang-label">MALAY</span>
+                    </div>
+                </div>
+
+                <div class="relative my-2 flex-grow">
+                    <textarea id="source-text" 
+                        class="w-full h-full min-h-[160px] bg-transparent handwriting-text focus:outline-none resize-none p-1 placeholder-midnightViolet/40 dark:placeholder-brandBlush/40"
+                        placeholder="Type or paste your text here..."
+                        oninput="updateCharCount()"></textarea>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-brandTaupe">
+                    <div class="text-xs text-midnightViolet/80 dark:text-brandMint font-mono" id="char-count">
+                        0 Characters | 0 Words
+                    </div>
+
+                    <button id="translate-btn" onclick="executeTranslation()" class="px-6 py-2.5 bg-brandCoral hover:bg-brandCoral-hover text-midnightViolet font-bold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-2 transform active:scale-95 text-sm border border-brandCoral-dark">
+                        <span>TRANSLATE</span>
+                        <i class="fa-solid fa-circle-arrow-down animate-bounce"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MIDDLE SPIRAL RING SPINE -->
+        <div id="ring-spine" class="relative py-4 my-2 flex justify-around items-center z-20">
+            <div class="absolute inset-0 bg-midnightViolet shadow-inner rounded my-auto h-6 border-y border-ebonyBinder"></div>
+            <script>
+                for(let i=0; i<8; i++) {
+                    document.write(`
+                        <div class="relative flex flex-col items-center z-10">
+                            <div class="spiral-hole w-4 h-3 rounded-full mb-1"></div>
+                            <div class="spiral-ring w-3 h-10 -my-2 transform -rotate-3"></div>
+                            <div class="spiral-hole w-4 h-3 rounded-full mt-1"></div>
+                        </div>
+                    `);
+                }
+            </script>
+        </div>
+
+        <!-- PAGE 02 (BOTTOM 3D UNCURLED COVER & RESULT) -->
+        <section id="bottom-page-container" class="relative z-10">
+            <div class="relative flex">
+                <div id="bottom-paper" class="journal-page rounded-lg p-6 md:p-8 relative min-h-[440px] w-full flex flex-col justify-between border border-brandTaupe">
+                    
+                    <!-- Tape Badge -->
+                    <div class="absolute -top-3 right-12 tape-effect px-4 py-1 text-xs font-mono font-bold uppercase tracking-widest transform rotate-1 rounded-sm">
+                        Translation
+                    </div>
+
+                    <div class="flex justify-between items-start mb-2 border-b border-brandTaupe pb-2">
+                        <div>
+                            <span class="text-xs font-bold tracking-widest text-midnightViolet/70 dark:text-brandMint uppercase font-mono">RESULT</span>
+                            <h2 class="handwriting-heading text-xl md:text-2xl font-bold text-midnightViolet dark:text-brandBlush flex items-center gap-2">
+                                <span id="view-title">TRANSLATION</span>
+                                <span id="loading-spinner" class="hidden text-midnightViolet text-sm"><i class="fa-solid fa-spinner fa-spin"></i> Translating...</span>
+                            </h2>
+                        </div>
+                        
+                        <div id="active-tab-indicator" class="text-xs font-mono font-bold px-2.5 py-1 rounded bg-brandSage text-midnightViolet border border-brandSage-dark flex items-center gap-1.5">
+                            <i class="fa-solid fa-language"></i> Output Mode
+                        </div>
+                    </div>
+
+                    <div class="relative my-2 flex-grow min-h-[240px]">
+                        <!-- Panel 1: Main Text -->
+                        <div id="panel-translation" class="h-full">
+                            <div id="translated-text" class="handwriting-text whitespace-pre-wrap focus:outline-none p-1 min-h-[200px]" contenteditable="true">
+Heather loved this photo! I think that it was the only photo of all of us... What is it doing here?
+
+"WHO ARE YOU" Is this a question or an answer?
+                            </div>
+                        </div>
+
+                        <!-- Panel 2: Quality Inspection -->
+                        <div id="panel-quality" class="hidden h-full">
+                            <div class="bg-brandBlush/80 dark:bg-[#1c1917]/90 border border-brandTaupe dark:border-brandTaupe/30 rounded-lg p-4 font-mono text-xs text-midnightViolet dark:text-brandBlush space-y-4 shadow-inner">
+                                <div class="flex items-center justify-between border-b border-brandTaupe dark:border-brandTaupe/30 pb-2">
+                                    <span class="font-bold text-sm text-midnightViolet dark:text-brandBlush flex items-center gap-2">
+                                        <i class="fa-solid fa-shield-halved text-brandSage-dark dark:text-brandSage"></i> Quality Inspection
+                                    </span>
+                                    <span class="bg-brandCoral text-midnightViolet font-bold px-2 py-0.5 rounded text-xs border border-brandCoral-dark">OVERALL: 94%</span>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <div class="flex justify-between mb-1 font-semibold">
+                                            <span>Accuracy & Meaning:</span>
+                                            <span>96%</span>
+                                        </div>
+                                        <div class="w-full bg-brandTaupe/40 dark:bg-brandTaupe/20 rounded-full h-2">
+                                            <div class="bg-brandSage-dark dark:bg-brandSage h-2 rounded-full" style="width: 96%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between mb-1 font-semibold">
+                                            <span>Fluency & Naturalness:</span>
+                                            <span>92%</span>
+                                        </div>
+                                        <div class="w-full bg-brandTaupe/40 dark:bg-brandTaupe/20 rounded-full h-2">
+                                            <div class="bg-brandSage-dark dark:bg-brandSage h-2 rounded-full" style="width: 92%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between mb-1 font-semibold">
+                                            <span>Tone & Style Match:</span>
+                                            <span>90%</span>
+                                        </div>
+                                        <div class="w-full bg-brandTaupe/40 dark:bg-brandTaupe/20 rounded-full h-2">
+                                            <div class="bg-brandCoral-dark dark:bg-brandCoral h-2 rounded-full" style="width: 90%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between mb-1 font-semibold">
+                                            <span>Vocabulary Richness:</span>
+                                            <span>95%</span>
+                                        </div>
+                                        <div class="w-full bg-brandTaupe/40 dark:bg-brandTaupe/20 rounded-full h-2">
+                                            <div class="bg-brandSage-dark dark:bg-brandSage h-2 rounded-full" style="width: 95%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-brandBlush dark:bg-[#28231f] p-3 rounded border border-brandTaupe dark:border-brandTaupe/30 space-y-1.5">
+                                    <div class="font-bold flex items-center gap-1.5">
+                                        <i class="fa-solid fa-magnifying-glass text-brandCoral-dark dark:text-brandCoral"></i> Linguistic Notes:
+                                    </div>
+                                    <ul class="list-disc list-inside space-y-1 text-[11px] leading-relaxed">
+                                        <li><strong>Preservation:</strong> Idiomatic expressions and poetic structure were preserved without literal distortion.</li>
+                                        <li><strong>Context:</strong> Introspective tone matched the detective journal aesthetic.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                       
+
+                        <!-- Panel 4: Diff -->
+                        <div id="panel-diff" class="hidden h-full">
+                            <div class="bg-brandBlush/80 dark:bg-[#1c1917]/90 border border-brandTaupe dark:border-brandTaupe/30 rounded-lg p-4 font-mono text-xs text-midnightViolet dark:text-brandBlush space-y-3">
+                                <div class="flex justify-between items-center border-b border-brandTaupe dark:border-brandTaupe/30 pb-2">
+                                    <span class="font-bold flex items-center gap-2">
+                                        <i class="fa-solid fa-code-compare"></i> Alignment & Structural Diff
+                                    </span>
+                                    <span class="text-[10px] font-bold">3 Parallels</span>
+                                </div>
+                                <div class="space-y-2 text-[11px]">
+                                    <div class="p-2 bg-brandBlush dark:bg-[#28231f] rounded border-l-4 border-brandCoral">
+                                        <span class="font-bold">L1:</span> "Heather menyukai foto ini..." ➔ <span class="font-bold">"Heather loved this photo..."</span>
+                                    </div>
+                                    <div class="p-2 bg-brandBlush dark:bg-[#28231f] rounded border-l-4 border-brandSage">
+                                        <span class="font-bold">L2:</span> "Apa yang ia buat di sini?" ➔ <span class="font-bold">"What is it doing here?"</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-brandTaupe">
+                        <button onclick="copyToClipboard()" class="px-3 py-1.5 bg-brandSage text-midnightViolet hover:bg-brandSage-dark dark:bg-brandSage/80 dark:hover:bg-brandSage font-bold text-xs rounded border border-brandSage-dark transition flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-regular fa-copy"></i> Copy Result
+                        </button>
+                        <button onclick="panToTop()" class="text-xs text-midnightViolet dark:text-brandMint hover:text-brandCoral-dark font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-up-long"></i> Back to Top
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RIGHT SIDE BOOKMARK TABS -->
+                <div class="flex flex-col gap-3 ml-2 pt-6">
+                    <button onclick="switchTab('translation')" id="tab-translation" class="bookmark-tab active has-tooltip relative w-12 h-12 rounded-r-lg bg-brandCoral dark:bg-brandCoral/90 text-midnightViolet flex items-center justify-center text-lg border-y border-r border-brandCoral-dark font-bold">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span class="tooltip-text absolute left-14 whitespace-nowrap bg-midnightViolet text-brandBlush text-xs px-2.5 py-1 rounded shadow-lg border border-brandTaupe z-30 font-mono">Translated Result</span>
+                    </button>
+
+                    <button onclick="switchTab('quality')" id="tab-quality" class="bookmark-tab has-tooltip relative w-12 h-12 rounded-r-lg bg-brandSage dark:bg-brandSage/90 text-midnightViolet flex items-center justify-center text-lg border-y border-r border-brandSage-dark font-bold">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span class="tooltip-text absolute left-14 whitespace-nowrap bg-midnightViolet text-brandBlush text-xs px-2.5 py-1 rounded shadow-lg border border-brandTaupe z-30 font-mono">Quality Assessment</span>
+                    </button>
+
+                    <button onclick="switchTab('diff')" id="tab-diff" class="bookmark-tab has-tooltip relative w-12 h-12 rounded-r-lg bg-brandTaupe dark:bg-brandTaupe/90 text-midnightViolet flex items-center justify-center text-lg border-y border-r border-brandTaupe-dark font-bold">
+                        <i class="fa-solid fa-code-compare"></i>
+                        <span class="tooltip-text absolute left-14 whitespace-nowrap bg-midnightViolet text-brandBlush text-xs px-2.5 py-1 rounded shadow-lg border border-brandTaupe z-30 font-mono">Diff & Alignment</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full h-4 bg-gradient-to-r from-midnightViolet via-midnightViolet/90 to-midnightViolet rounded-b-lg mt-1 flex items-center justify-between px-6 opacity-90 border-t border-brandTaupe/40">
+                <div class="w-3 h-1.5 bg-ebonyBinder rounded-full"></div>
+                <div class="text-[9px] uppercase tracking-widest text-brandMint font-mono"> POETRY • PAGE 02</div>
+                <div class="w-3 h-1.5 bg-ebonyBinder rounded-full"></div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- RICH NOTEBOOK FOOTER -->
+    <footer class="w-full journal-footer text-brandBlush/80 mt-12 border-t border-brandCoral/30 transition-colors">
+        <div class="max-w-4xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-mono">
+            <!-- Branding Column -->
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded text-midnightViolet flex items-center justify-center font-bold text-xs">
+                        <img src="logo1.png" alt="PustakaTranslate Logo" class="h-8 w-auto object-contain aspect-[16/9]" />
+                    </div>
+                    <span class="font-serif text-sm font-bold tracking-tight text-brandBlush">Tinta Ritma</span>
+                </div>
+                <p class="text-[11px] leading-relaxed text-brandBlush/70 font-sans">
+                    A translation workbench designed for literary, poetic, and archival text preservation.
+                </p>
+                <div class="text-[10px] text-brandMint pt-1">
+                    <i class="fa-solid fa-circle text-[8px] text-emerald-400 mr-1 animate-pulse"></i> Engine: 
+                </div>
+            </div>
+
+            <!-- Quick Shortcuts / Tips -->
+            <div class="space-y-2 border-t md:border-t-0 md:border-l border-brandTaupe/20 pt-4 md:pt-0 md:pl-6">
+                <div class="font-bold uppercase tracking-wider text-brandCoral text-[11px]">Notebook Shortcuts</div>
+                <ul class="space-y-1.5 text-[11px] text-brandBlush/80">
+                    <li class="flex items-center gap-2">
+                        <span class="bg-midnightViolet/90 border border-brandTaupe/40 px-1.5 py-0.5 rounded text-[10px] text-brandMint">Tabs</span>
+                        <span>Switch between Quality & Diff views</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="bg-midnightViolet/90 border border-brandTaupe/40 px-1.5 py-0.5 rounded text-[10px] text-brandMint">Presets</span>
+                        <span>Load sample pantuns</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Links & Status
+            <div class="space-y-2 border-t md:border-t-0 md:border-l border-brandTaupe/20 pt-4 md:pt-0 md:pl-6">
+                <div class="font-bold uppercase tracking-wider text-brandCoral text-[11px]">Workbench Links</div>
+                <div class="flex flex-col space-y-1.5 text-[11px]">
+                    <button onclick="openModal('aboutModal')" class="text-left hover:text-brandCoral transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-chevron-right text-[9px] text-brandSage"></i> Literary Translation Methodology
+                    </button>
+                    <button onclick="openModal('helpModal')" class="text-left hover:text-brandCoral transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-chevron-right text-[9px] text-brandSage"></i> Quality Scorecard Manual
+                    </button>
+                    <button onclick="openModal('settingsModal')" class="text-left hover:text-brandCoral transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-chevron-right text-[9px] text-brandSage"></i> Preferences & Animation Controls
+                    </button>
+                </div>
+            </div> -->
+        </div>
+
+        <!-- Copyright Bar -->
+        <div class="border-t border-brandTaupe/10 bg-black/20 py-3 text-center text-[10px] text-brandBlush/50 font-mono">
+            &copy; 2026 Tinta Ritma Workbench • Crafting digital stationery for translators
+        </div>
+    </footer>
+
+    <!-- MODALS -->
+    <!-- ABOUT TINTA RITMA MODAL -->
+<div id="aboutModal" class="fixed inset-0 bg-midnightViolet/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 sm:p-6">
+    <div class="bg-brandBlush dark:bg-midnightViolet border border-brandTaupe dark:border-[#4b543b] p-6 sm:p-8 rounded-2xl max-w-2xl w-full shadow-2xl max-h-[88vh] flex flex-col justify-between overflow-y-auto">
+        
+        <!-- Header & Title -->
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-brandTaupe/60 dark:border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-midnightViolet text-brandBlush dark:bg-brandCoral dark:text-midnightViolet flex items-center justify-center font-bold shadow">
+                    <i class="fa-solid fa-feather-pointed text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="font-serif text-2xl font-bold text-midnightViolet dark:text-brandBlush">About Tinta Ritma</h3>
+                    <p class="text-xs uppercase tracking-widest text-midnightViolet/60 dark:text-brandBlush/60 font-semibold">Language Services & Education Technology</p>
+                </div>
+            </div>
+            <button onclick="closeModal('aboutModal')" class="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-midnightViolet dark:text-brandBlush flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Scrollable Content Body -->
+        <div class="space-y-6 text-sm text-midnightViolet/90 dark:text-brandBlush/90 font-sans leading-relaxed pr-1">
+            
+            <!-- Intro Story -->
+            <div>
+                <p class="mb-3">
+                    Founded in <strong>2012 in Kuala Lumpur, Malaysia</strong>, <strong>Tinta Ritma Sdn Bhd</strong> combines <span class="italic font-serif">"Tinta"</span> (Ink) and <span class="italic font-serif">"Ritma"</span> (Rhythm)—reflecting our belief that language is both a meticulous written craft and an expressive spoken flow.
+                </p>
+                <p>
+                    With over 85 dedicated staff members, we transcribe classical manuscripts and literary texts obtained directly from authors and archives, building modern technology tools to make literary knowledge interactive and living.
+                </p>
+            </div>
+
+            <!-- Vision & Mission Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-3.5 rounded-xl bg-white/60 dark:bg-black/20 border border-brandTaupe/50 dark:border-white/10">
+                    <div class="text-xs font-bold uppercase tracking-wider text-midnightViolet dark:text-brandCoral mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-eye text-xs"></i> Our Vision
+                    </div>
+                    <p class="text-xs leading-normal">
+                        To make literature accessible, living, and relevant in the digital age.
+                    </p>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-white/60 dark:bg-black/20 border border-brandTaupe/50 dark:border-white/10">
+                    <div class="text-xs font-bold uppercase tracking-wider text-midnightViolet dark:text-brandCoral mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-bullseye text-xs"></i> Our Mission
+                    </div>
+                    <p class="text-xs leading-normal">
+                        To merge literary heritage with innovative technology so everyone can discover and create language.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Side-by-Side Logo Showcase -->
+            <div class="pt-2 border-t border-brandTaupe/40 dark:border-white/10">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-midnightViolet/70 dark:text-brandBlush/70 mb-3">Brand Identity & Emblem</h4>
+                
+                <div class="grid grid-cols-2 gap-4 items-center">
+                    <!-- Logo Box 1 (Light Background) -->
+                    <div class="aspect-square bg-white border border-brandTaupe/60 dark:border-white/10 rounded-xl p-4 flex items-center justify-center shadow-sm hover:shadow transition">
+                        <img src="logo2.png" alt="Tinta Ritma Logo Light Variant" class="w-full h-full object-contain">
+                    </div>
+
+                    <!-- Logo Box 2 (Dark Background) -->
+                    <div class="aspect-square bg-midnightViolet border border-brandTaupe/60 dark:border-white/10 rounded-xl p-4 flex items-center justify-center shadow-sm hover:shadow transition">
+                        <img src="logo1.png" alt="Tinta Ritma Logo Dark Variant" class="w-full h-full object-contain">
+                    </div>
+                </div>
+
+                <p class="text-xs italic text-midnightViolet/80 dark:text-brandBlush/80 mt-3 text-center leading-normal">
+                    The violet hue signifies <strong>trust and knowledge</strong>, the cursive <strong>'T'</strong> stems from "Tinta", and the pen emblem honors our dedication to literature.
+                </p>
+            </div>
+
+            <!-- Corporate Leadership & Team Summary -->
+            <div class="p-4 rounded-xl bg-brandTaupe/20 dark:bg-white/5 border border-brandTaupe/40 dark:border-white/10 text-xs space-y-1.5 font-mono">
+                <div><strong class="text-midnightViolet dark:text-brandCoral">Managing Director & Founder:</strong> Dr. Huseina Binti Abdullah</div>
+                <div><strong class="text-midnightViolet dark:text-brandCoral">Core Team:</strong> Software Engineers, Literary Editors, UX/Digitization Specialists & Admin</div>
+                <div><strong class="text-midnightViolet dark:text-brandCoral">Objective:</strong> Leading language literacy tech platform in Malaysia.</div>
+            </div>
+
+        </div>
+
+        <!-- Close Action Button -->
+        <div class="pt-5 mt-4 border-t border-brandTaupe/60 dark:border-white/10">
+            <button onclick="closeModal('aboutModal')" class="w-full py-2.5 bg-brandCoral hover:bg-brandCoral-hover text-midnightViolet font-bold rounded-xl text-sm transition shadow-md border border-brandCoral-dark">
+                Close About Panel
+            </button>
+        </div>
+
+    </div>
+</div>
+<div id="settingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#f4ebe8] dark:bg-[#24211e] border border-[#d6cbbf] dark:border-[#4b543b] p-6 rounded-2xl max-w-md w-full shadow-2xl">
+        <div class="flex items-center justify-between pb-3 mb-4 border-b border-[#d6cbbf] dark:border-[#422040]">
+            <h3 class="font-serif text-xl font-bold text-[#422040] dark:text-[#f2c3b9]">Workbench Settings</h3>
+            <button onclick="closeModal('settingsModal')" class="text-stone-500 hover:text-stone-800 dark:hover:text-stone-200">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <div class="space-y-4 text-sm font-sans text-stone-700 dark:text-stone-300">
+            <!-- Font Style Picker -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#422040] dark:text-[#97b3ae] mb-1.5">Journal Handwriting Font</label>
+                <select id="fontSelector" onchange="changeJournalFont(this.value)" class="w-full bg-white dark:bg-[#1e1a18] border border-[#d6cbbf] dark:border-stone-700 rounded-lg px-3 py-2 text-sm text-stone-800 dark:text-stone-100 focus:outline-none">
+                    <option value="'Caveat', cursive" selected>Caveat (Casual Cursive)</option>
+                    <option value="'Kalam', cursive">Kalam (Notebook Pen)</option>
+                    <option value="'Cinzel', serif">Cinzel (Classic Novel / Serif)</option>
+                    <option value="'Courier Prime', monospace">Courier (Vintage Typewriter)</option>
+                    <option value="'Inter', sans-serif">Inter (Clean Modern Sans)</option>
+                </select>
+            </div>
+
+            <!-- Font Size Toggle -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#422040] dark:text-[#97b3ae] mb-1.5">Font Size</label>
+                <div class="flex items-center gap-2">
+                    <button onclick="changeFontSize('small')" class="flex-1 py-1.5 border border-[#d6cbbf] dark:border-stone-700 rounded-lg text-xs font-bold hover:bg-[#f2c3b9]/20">Small</button>
+                    <button onclick="changeFontSize('medium')" class="flex-1 py-1.5 border border-[#422040] bg-[#422040] text-white rounded-lg text-xs font-bold">Medium</button>
+                    <button onclick="changeFontSize('large')" class="flex-1 py-1.5 border border-[#d6cbbf] dark:border-stone-700 rounded-lg text-xs font-bold hover:bg-[#f2c3b9]/20">Large</button>
+                </div>
+            </div>
+
+            <!-- Script / Learning Toggle -->
+            <div class="pt-2 border-t border-[#d6cbbf]/60 dark:border-stone-700 space-y-2.5">
+                <label class="flex items-center justify-between cursor-pointer">
+                    <span class="text-xs font-semibold">Show Phonetic Script (Pinyin / Romaji)</span>
+                    <input type="checkbox" id="phoneticToggle" class="accent-[#e57a44] rounded">
+                </label>
+                <label class="flex items-center justify-between cursor-pointer">
+                    <span class="text-xs font-semibold">3D Scroll Physics Unfolding</span>
+                    <input type="checkbox" id="physicsToggle" checked class="accent-[#e57a44] rounded">
+                </label>
+            </div>
+        </div>
+
+        <button onclick="closeModal('settingsModal')" class="w-full mt-6 py-2.5 bg-[#422040] hover:bg-[#321831] text-white font-bold rounded-xl text-sm shadow transition">Apply & Save</button>
+    </div>
+</div>
+
+    <div id="helpModal" class="fixed inset-0 bg-midnightViolet/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-brandBlush dark:bg-midnightViolet border border-brandTaupe p-6 rounded-xl max-w-md w-full shadow-2xl">
+            <h3 class="font-serif text-xl font-bold text-midnightViolet dark:text-brandBlush mb-2">How to Use</h3>
+            <ul class="list-disc list-inside space-y-2 text-xs text-midnightViolet dark:text-brandBlush font-sans mb-6">
+                <li>Write or paste source text on Page 01.</li>
+                <li>Click <strong>TRANSLATE</strong> or scroll down to open the translated text in the journal.</li>
+                <li>Click into Page 02 to edit the translated text.</li>
+                <li>The various tabs besides the Page 02 serves different functions.</li>
+                
+            </ul>
+            <button onclick="closeModal('helpModal')" class="w-full py-2 bg-brandCoral hover:bg-brandCoral-hover text-midnightViolet font-bold rounded-lg text-sm transition shadow border border-brandCoral-dark">Got it</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-midnightViolet text-brandBlush px-4 py-2.5 rounded-lg shadow-xl border border-brandCoral text-xs font-mono transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2 z-50">
+        <i class="fa-solid fa-circle-info text-brandCoral"></i>
+        <span id="toast-msg">Notification</span>
+    </div>
+
+    <!-- JavaScript logic -->
+    <script>
+        const presets = {
+            pantun: {
+                sourceLang: 'ms',
+                targetLang: 'en',
+                label: 'MALAY',
+                text: "Heather sangat menyukai foto ini! Saya rasa ini satu-satunya foto kita semua... Apa yang buat ia berada di sini?\n\n\"SIAPAKAH AWAK\" Adakah ini soalan atau jawapan?",
+                translation: "Heather loved this photo! I think that it was the only photo of all of us... What is it doing here?\n\n\"WHO ARE YOU\" Is this a question or an answer?",
+                
+            },
+            quote: {
+                sourceLang: 'en',
+                targetLang: 'ms',
+                label: 'ENGLISH',
+                text: "The rain washed over the neon-lit alleyways. Every clue led to another question, buried deep within this forgotten journal.",
+                translation: "Hujan membasahi lorong-lorong berlampu neon. Setiap petunjuk membawa kepada soalan lain, tertanam jauh di dalam jurnal yang terlupa ini.",
+               
+            }
+        };
+
+        const langLabels = {
+            ms: 'MALAY',
+            en: 'ENGLISH',
+            zh: 'MANDARIN',
+            ja: 'JAPANESE',
+            ar: 'ARABIC'
+        };
+
+        window.onload = function() {
+            document.getElementById('source-text').value = presets.pantun.text;
+            updateCharCount();
+            adjustPageHeight();
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            updateScrollAngle();
+        };
+
+        window.onresize = function() {
+            adjustPageHeight();
+        };
+
+        function adjustPageHeight() {
+            const headerHeight = document.querySelector('header').offsetHeight;
+            const toolbarHeight = document.querySelector('section').offsetHeight;
+            const ringSpine = document.getElementById('ring-spine');
+            const spineHeight = ringSpine ? ringSpine.offsetHeight : 48;
+            
+            const availableHeight = window.innerHeight - headerHeight - toolbarHeight - spineHeight - 40;
+            const topPage = document.getElementById('top-page-container');
+            
+            if (availableHeight > 280) {
+                topPage.style.height = `${availableHeight}px`;
+            } else {
+                topPage.style.height = '360px';
+            }
+        }
+
+        window.addEventListener('scroll', updateScrollAngle, { passive: true });
+
+        function updateScrollAngle() {
+            const bottomContainer = document.getElementById('bottom-page-container');
+            const ringSpine = document.getElementById('ring-spine');
+            if (!ringSpine || !bottomContainer) return;
+
+            const spineRect = ringSpine.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+
+            let progress = (viewportHeight - spineRect.top) / (viewportHeight * 0.75);
+            progress = Math.max(0, Math.min(1, progress));
+
+            const angle = -105 * (1 - progress);
+            const opacity = 0.2 + (0.8 * progress);
+            const translateY = -20 * (1 - progress);
+
+            bottomContainer.style.transform = `rotateX(${angle}deg) translateY(${translateY}px)`;
+            bottomContainer.style.opacity = opacity;
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const darkIcon = document.getElementById('darkIcon');
+            const lightIcon = document.getElementById('lightIcon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                darkIcon.classList.remove('hidden');
+                lightIcon.classList.add('hidden');
+            } else {
+                html.classList.add('dark');
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+            }
+        }
+
+        function swapLanguages() {
+            const src = document.getElementById('sourceLang');
+            const tgt = document.getElementById('targetLang');
+            const temp = src.value;
+            src.value = tgt.value;
+            tgt.value = temp;
+            syncLanguageLabel();
+            showToast("Swapped languages!");
+        }
+
+        function syncLanguageLabel() {
+            const val = document.getElementById('sourceLang').value;
+            document.getElementById('source-lang-label').innerText = langLabels[val] || 'SOURCE';
+        }
+
+        function updateCharCount() {
+            const val = document.getElementById('source-text').value;
+            const chars = val.length;
+            const words = val.trim() ? val.trim().split(/\s+/).length : 0;
+            document.getElementById('char-count').innerText = `${chars} Characters | ${words} Words`;
+        }
+
+        function loadPreset(type) {
+            const data = presets[type];
+            if(!data) return;
+            
+            document.getElementById('sourceLang').value = data.sourceLang;
+            document.getElementById('targetLang').value = data.targetLang;
+            syncLanguageLabel();
+            
+            document.getElementById('source-text').value = data.text;
+            document.getElementById('translated-text').innerText = data.translation;
+            updateCharCount();
+            showToast("Loaded sample note");
+        }
+
+        function panToBottom() {
+            const ringSpine = document.getElementById('ring-spine');
+            ringSpine.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function panToTop() {
+            document.getElementById('top-page-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function executeTranslation() {
+            const input = document.getElementById('source-text').value;
+            if(!input.trim()) {
+                showToast("Please enter text in the journal first.");
+                return;
+            }
+
+            const spinner = document.getElementById('loading-spinner');
+            spinner.classList.remove('hidden');
+
+            setTimeout(() => {
+                spinner.classList.add('hidden');
+                
+                if(input !== presets.pantun.text && input !== presets.quote.text) {
+                    document.getElementById('translated-text').innerText = `[Translated Output]\n${input}`;
+                }
+
+                switchTab('translation');
+                panToBottom();
+                showToast("Page translated & revealed!");
+            }, 600);
+        }
+
+        function switchTab(tabName) {
+            const panels = ['translation', 'quality', 'diff'];
+            
+            panels.forEach(p => {
+                const panelEl = document.getElementById(`panel-${p}`);
+                const tabEl = document.getElementById(`tab-${p}`);
+                
+                if(p === tabName) {
+                    panelEl.classList.remove('hidden');
+                    tabEl.classList.add('active');
+                } else {
+                    panelEl.classList.add('hidden');
+                    tabEl.classList.remove('active');
+                }
+            });
+
+            const titles = {
+                translation: 'TRANSLATION',
+                quality: 'QUALITY CRITERIA SCORE',
+                diff: 'ALIGNMENT & DIFF'
+            };
+            document.getElementById('view-title').innerText = titles[tabName];
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('translated-text').innerText;
+            navigator.clipboard.writeText(text);
+            showToast("Copied translation to clipboard!");
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tinta Ritma - Pantun Gallery</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brandSage: { DEFAULT: '#97B3AE', dark: '#789792', light: '#b1c8c4' },
+                        brandMint: { DEFAULT: '#D2E0D3', light: '#e5eee6', dark: '#b3c9b5' },
+                        brandBlush: { DEFAULT: '#F0DDD6', dark: '#e3c9bf' },
+                        brandCoral: { DEFAULT: '#F2C3B9', hover: '#e5ab9f', dark: '#d99284' },
+                        brandTaupe: { DEFAULT: '#D6CBBF', dark: '#beaf9f', light: '#ebe3db' },
+                        deskParchment: '#f4ebe8',
+                        midnightViolet: '#422040',
+                        ebonyBinder: '#4b543b'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Wood Desk Surface with Soft Radial Gradient */
+        body {
+            background-color: #f4ebe8;
+            background-image: radial-gradient(#d6cbbf 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+            font-family: 'Inter', sans-serif;
+            color: #422040;
+            min-height: 100vh;
+        }
+
+        .dark body {
+            background-color: #181614;
+            background-image: radial-gradient(#38302a 1.5px, transparent 1.5px);
+            color: #f4ebe8;
+        }
+
+        .handwriting-text {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            line-height: 1.7rem;
+            color: #3b1c39;
+        }
+        .dark .handwriting-text {
+            color: #2a1529;
+        }
+
+        /* Translucent Washi Tape Effect */
+        .washi-tape {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(2px);
+            border-left: 2px dashed rgba(66, 32, 64, 0.2);
+            border-right: 2px dashed rgba(66, 32, 64, 0.2);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        /* Physical Note Depth & Curled Shadow Effect */
+        .aesthetic-card {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 20px -5px rgba(66, 32, 64, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .aesthetic-card:hover {
+            transform: translateY(-8px) scale(1.02) !important;
+            box-shadow: 0 20px 30px -8px rgba(66, 32, 64, 0.25);
+            z-index: 30;
+        }
+
+        /* Polaroid Card Accent */
+        .polaroid-card {
+            background: #ffffff;
+            padding: 12px 12px 24px 12px;
+            box-shadow: 0 12px 24px -6px rgba(0,0,0,0.18);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- TOP HEADER -->
+    <header class="w-full sticky top-0 z-40 bg-midnightViolet text-brandBlush border-b border-brandTaupe/40 px-6 py-3.5 flex items-center justify-between shadow-md">
+        <div class="flex items-center gap-3">
+            <img src="logo1.png" alt="PustakaTranslate Logo" class="h-8 w-auto object-contain aspect-[16/9]" />
+            <div>
+                <h1 class="font-serif text-lg font-bold tracking-tight text-brandBlush">Tinta Ritma</h1>
+                <p class="text-[10px] tracking-widest uppercase font-semibold text-brandMint">PustakaTranslate Gallery</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <button id="darkModeBtn" onclick="toggleDarkMode()" class="p-2.5 rounded-full bg-midnightViolet/80 text-brandCoral hover:bg-midnightViolet transition-all border border-brandCoral/40" title="Toggle Theme">
+                <svg id="darkIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path></svg>
+                <svg id="lightIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-5xl w-full mx-auto px-4 py-10 flex-grow">
+        
+        <!-- HERO SECTION -->
+        <section class="text-center mb-14 space-y-4">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brandCoral/30 border border-brandCoral text-xs font-mono font-bold text-midnightViolet dark:text-brandBlush shadow-sm">
+                <i class="fa-solid fa-feather-pointed text-brandCoral-dark"></i> PustakaTranslate Repository
+            </div>
+            
+            <h2 class="font-serif text-3xl md:text-5xl font-bold text-midnightViolet dark:text-brandBlush tracking-tight">
+                Tinta Ritma
+            </h2>
+            <p class="max-w-md mx-auto text-xs md:text-sm text-midnightViolet/80 dark:text-brandBlush/80 leading-relaxed font-sans">
+                Select any classical Malay pantun card below to launch the translation workbench.
+            </p>
+
+            <div class="pt-3">
+                <a href="index.html" class="inline-flex items-center gap-2.5 px-7 py-3 bg-brandCoral hover:bg-brandCoral-hover text-midnightViolet font-bold rounded-xl shadow-md hover:shadow-lg transition-all border border-brandCoral-dark text-sm">
+                    <span>Open Blank Workbench</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </section>
+
+        <!-- CLEAN STICKY NOTE GALLERY GRID -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- Note 01 (Blush) -->
+            <div onclick="openInWorkbench('Ten ringgit diberi hadiah,\n  Beli kain baju di Betawi;\nHancur badan dikandung tanah,\n  Budi yang baik dikenang juga.')"
+                 class="aesthetic-card bg-brandBlush rounded-2xl p-6 cursor-pointer border border-brandTaupe transform -rotate-1 flex flex-col justify-between min-h-[230px]">
+                <div class="washi-tape absolute -top-3 left-1/2 -translate-x-1/2 px-5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest text-midnightViolet">
+                    PANTUN 01
+                </div>
+                <div class="handwriting-text mt-3">
+                    "Ten ringgit diberi hadiah,<br>
+                    &nbsp;&nbsp;Beli kain baju di Betawi;<br>
+                    Hancur badan dikandung tanah,<br>
+                    &nbsp;&nbsp;Budi yang baik dikenang juga."
+                </div>
+                <div class="mt-4 pt-2 border-t border-midnightViolet/10 flex justify-between items-center text-xs font-bold text-midnightViolet/70">
+                    <span class="font-mono text-[10px] uppercase">Virtue & Kindness</span>
+                    <span class="flex items-center gap-1 hover:text-midnightViolet">Translate <i class="fa-solid fa-arrow-right text-[10px]"></i></span>
+                </div>
+            </div>
+
+            <!-- Note 02 (Mint) -->
+            <div onclick="openInWorkbench('Kalau tuan jalan ke hulu,\n  Carikan saya bunga kemboja;\nKalau tuan mati dahulu,\n  Nantikan saya di pintu syurga.')"
+                 class="aesthetic-card bg-brandMint rounded-2xl p-6 cursor-pointer border border-brandSage transform rotate-2 flex flex-col justify-between min-h-[230px]">
+                <div class="washi-tape absolute -top-3 left-1/2 -translate-x-1/2 px-5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest text-midnightViolet">
+                    PANTUN 02
+                </div>
+                <div class="handwriting-text mt-3">
+                    "Kalau tuan jalan ke hulu,<br>
+                    &nbsp;&nbsp;Carikan saya bunga kemboja;<br>
+                    Kalau tuan mati dahulu,<br>
+                    &nbsp;&nbsp;Nantikan saya di pintu syurga."
+                </div>
+                <div class="mt-4 pt-2 border-t border-midnightViolet/10 flex justify-between items-center text-xs font-bold text-midnightViolet/70">
+                    <span class="font-mono text-[10px] uppercase">Love & Devotion</span>
+                    <span class="flex items-center gap-1 hover:text-midnightViolet">Translate <i class="fa-solid fa-arrow-right text-[10px]"></i></span>
+                </div>
+            </div>
+
+            <!-- Note 03 (Sage) -->
+            <div onclick="openInWorkbench('Berakit-rakit ke hulu,\n  Berenang-renang ke tepian;\nBersakit-sakit dahulu,\n  Bersenang-senang kemudian.')"
+                 class="aesthetic-card bg-brandSage/60 rounded-2xl p-6 cursor-pointer border border-brandSage-dark transform -rotate-2 flex flex-col justify-between min-h-[230px]">
+                <div class="washi-tape absolute -top-3 left-1/2 -translate-x-1/2 px-5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest text-midnightViolet">
+                    PANTUN 03
+                </div>
+                <div class="handwriting-text mt-3">
+                    "Berakit-rakit ke hulu,<br>
+                    &nbsp;&nbsp;Berenang-renang ke tepian;<br>
+                    Bersakit-sakit dahulu,<br>
+                    &nbsp;&nbsp;Bersenang-senang kemudian."
+                </div>
+                <div class="mt-4 pt-2 border-t border-midnightViolet/10 flex justify-between items-center text-xs font-bold text-midnightViolet/70">
+                    <span class="font-mono text-[10px] uppercase">Wisdom & Perseverance</span>
+                    <span class="flex items-center gap-1 hover:text-midnightViolet">Translate <i class="fa-solid fa-arrow-right text-[10px]"></i></span>
+                </div>
+            </div>
+
+            <!-- Note 04 (Coral) -->
+            <div onclick="openInWorkbench('Pulau Pandan jauh ke tengah,\n  Gunung Daik bercabang tiga;\nHancur badan dikandung tanah,\n  Budi yang baik dikenang juga.')"
+                 class="aesthetic-card bg-brandCoral rounded-2xl p-6 cursor-pointer border border-brandCoral-dark transform rotate-1 flex flex-col justify-between min-h-[230px]">
+                <div class="washi-tape absolute -top-3 left-1/2 -translate-x-1/2 px-5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest text-midnightViolet">
+                    PANTUN 04
+                </div>
+                <div class="handwriting-text mt-3">
+                    "Pulau Pandan jauh ke tengah,<br>
+                    &nbsp;&nbsp;Gunung Daik bercabang tiga;<br>
+                    Hancur badan dikandung tanah,<br>
+                    &nbsp;&nbsp;Budi yang baik dikenang juga."
+                </div>
+                <div class="mt-4 pt-2 border-t border-midnightViolet/10 flex justify-between items-center text-xs font-bold text-midnightViolet/70">
+                    <span class="font-mono text-[10px] uppercase">Nature & Legacy</span>
+                    <span class="flex items-center gap-1 hover:text-midnightViolet">Translate <i class="fa-solid fa-arrow-right text-[10px]"></i></span>
+                </div>
+            </div>
+
+            <!-- Note 05 (Taupe) -->
+            <div onclick="openInWorkbench('Yang kurik itu kundi,\n  Yang merah itu saga;\nYang baik itu budi,\n  Yang indah itu bahasa.')"
+                 class="aesthetic-card bg-brandTaupe rounded-2xl p-6 cursor-pointer border border-brandTaupe-dark transform -rotate-1 flex flex-col justify-between min-h-[230px]">
+                <div class="washi-tape absolute -top-3 left-1/2 -translate-x-1/2 px-5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest text-midnightViolet">
+                    PANTUN 05
+                </div>
+                <div class="handwriting-text mt-3">
+                    "Yang kurik itu kundi,<br>
+                    &nbsp;&nbsp;Yang merah itu saga;<br>
+                    Yang baik itu budi,<br>
+                    &nbsp;&nbsp;Yang indah itu bahasa."
+                </div>
+                <div class="mt-4 pt-2 border-t border-midnightViolet/10 flex justify-between items-center text-xs font-bold text-midnightViolet/70">
+                    <span class="font-mono text-[10px] uppercase">Character & Language</span>
+                    <span class="flex items-center gap-1 hover:text-midnightViolet">Translate <i class="fa-solid fa-arrow-right text-[10px]"></i></span>
+                </div>
+            </div>
+
+            <!-- Note 06 (Parchment Accent) -->
+            <div onclick="openInWorkbench('Pisang emas dibawa belayar,\n  Masak sebiji di atas peti;\nHutang emas boleh dibayar,\n  Hutang budi dibawa mati.')"
+                 class="aesthetic-card bg-[#ebe1dc] dark:bg-[#2d2825] rounded-2xl p-6 cursor-pointer border border-brandTaupe transform rotate-2 flex flex-col justify-between min-h-[230px]">
+                <div class="washi-tape absolute -top-3 left-1/2 -translate-x-1/2 px-5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest text-midnightViolet">
+                    PANTUN 06
+                </div>
+                <div class="handwriting-text mt-3">
+                    "Pisang emas dibawa belayar,<br>
+                    &nbsp;&nbsp;Masak sebiji di atas peti;<br>
+                    Hutang emas boleh dibayar,<br>
+                    &nbsp;&nbsp;Hutang budi dibawa mati."
+                </div>
+                <div class="mt-4 pt-2 border-t border-midnightViolet/10 flex justify-between items-center text-xs font-bold text-midnightViolet/70">
+                    <span class="font-mono text-[10px] uppercase">Honor & Gratitude</span>
+                    <span class="flex items-center gap-1 hover:text-midnightViolet">Translate <i class="fa-solid fa-arrow-right text-[10px]"></i></span>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full journal-footer text-brandBlush/80 mt-12 border-t border-brandCoral/30 py-5 text-center text-xs font-mono">
+        &copy; 2026 Tinta Ritma Sdn Bhd • PustakaTranslate Literary Platform
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            document.getElementById('darkIcon').classList.toggle('hidden');
+            document.getElementById('lightIcon').classList.toggle('hidden');
+        }
+
+        function openInWorkbench(pantunText) {
+            const encodedText = encodeURIComponent(pantunText);
+            window.location.href = `index.html?pantun=${encodedText}`;
+        }
+    </script>
+</body>
+</html>

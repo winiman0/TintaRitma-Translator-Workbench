@@ -1,0 +1,188 @@
+body {
+            background-color: #f4ebe8;
+            background-image: radial-gradient(#d6cbbf 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            color: #422040;
+        }
+        .dark body {
+            background-color: #181614;
+            background-image: radial-gradient(#38302a 1.5px, transparent 1.5px);
+            color: #f4ebe8;
+        }
+
+        .journal-binder {
+            background: #4b543b;
+            border-radius: 14px;
+            box-shadow: 0 25px 50px -12px rgba(66, 32, 64, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.15);
+            perspective: 1400px;
+        }
+        .dark .journal-binder {
+            background: #20241a;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), inset 0 2px 4px rgba(255, 255, 255, 0.08);
+            border-color: #2e3526;
+        }
+
+        .journal-page {
+            background-color: #F0DDD6;
+            background-image: linear-gradient(#D6CBBF 1px, transparent 1px);
+            background-size: 100% 28px;
+            box-shadow: inset 0 0 30px rgba(151, 179, 174, 0.25), 0 4px 10px rgba(66, 32, 64, 0.12);
+            line-height: 28px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .dark .journal-page {
+            background-color: #24211e;
+            background-image: linear-gradient(#3a342f 1px, transparent 1px);
+            box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.75), 0 6px 16px rgba(0, 0, 0, 0.6);
+            border-color: #3d3630;
+        }
+
+        .handwriting-heading { font-family: 'Cinzel', serif; }
+        .handwriting-text {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            line-height: 28px;
+            color: #422040;
+        }
+        .dark .handwriting-text { color: #f4ebe8; }
+
+        .spiral-ring {
+            background: linear-gradient(90deg, #F2C3B9 0%, #D2E0D3 40%, #ffffff 50%, #97B3AE 70%, #d99284 100%);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.8);
+            border-radius: 4px;
+        }
+        .dark .spiral-ring {
+            background: linear-gradient(90deg, #d98f82 0%, #a1b2a2 40%, #edd8d1 50%, #728f8a 70%, #b86b5e 100%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.5);
+        }
+        .spiral-hole { background: #231222; box-shadow: inset 0 2px 4px rgba(0,0,0,0.8); }
+        .dark .spiral-hole { background: #110e11; box-shadow: inset 0 2px 6px rgba(0,0,0,0.95); }
+
+        #bottom-page-container {
+            transform-origin: top center;
+            will-change: transform, opacity;
+            transition: transform 0.05s linear;
+        }
+
+        .bookmark-tab {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 2px 3px 6px rgba(66, 32, 64, 0.2);
+            user-select: none;
+        }
+        .dark .bookmark-tab { box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.6); }
+        .bookmark-tab:hover { transform: translateX(6px) scale(1.03); }
+        .bookmark-tab.active {
+            transform: translateX(10px);
+            box-shadow: 4px 4px 10px rgba(66, 32, 64, 0.3);
+        }
+        .dark .bookmark-tab.active { box-shadow: 4px 6px 14px rgba(0, 0, 0, 0.7); }
+
+
+        .tape-effect {
+            background: rgba(242, 195, 185, 0.85);
+            backdrop-filter: blur(2px);
+            border-left: 2px dashed rgba(66, 32, 64, 0.3);
+            border-right: 2px dashed rgba(66, 32, 64, 0.3);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            color: #422040;
+        }
+        .dark .tape-effect {
+            background: rgba(242, 195, 185, 0.22);
+            border-left: 2px dashed rgba(244, 235, 232, 0.3);
+            border-right: 2px dashed rgba(244, 235, 232, 0.3);
+            color: #F0DDD6;
+        }
+
+        .journal-footer {
+            background: #321831;
+            box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+        .dark .journal-footer {
+            background: #120e12;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .tooltip-text { visibility: hidden; opacity: 0; transition: opacity 0.2s ease-in-out; }
+        .has-tooltip:hover .tooltip-text { visibility: visible; opacity: 1; }
+
+        /* Gallery.html */
+
+
+        .handwriting-text {
+            font-family: 'Caveat', cursive;
+            font-size: 1.45rem;
+            line-height: 1.65rem;
+            color: #3b1c39;
+        }
+
+        /* --- PAPERY STICKY NOTE STYLING --- */
+
+        /* Authentic Washi / Matte Tape Strip */
+        .tape-strip {
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(2px);
+            border-left: 2px dashed rgba(66, 32, 64, 0.2);
+            border-right: 2px dashed rgba(66, 32, 64, 0.2);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+
+        /* Papery Texture Overlays & Curled Corner Elevation */
+        .papery-note {
+            position: relative;
+            /* Subtle paper fiber gradient overlay */
+            background-image: 
+                linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(0, 0, 0, 0.04) 100%),
+                repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.015) 0px, rgba(0, 0, 0, 0.015) 2px, transparent 2px, transparent 4px);
+            border-radius: 2px 2px 18px 2px; /* Slight bottom-right page curl corner */
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            
+            /* Multi-layered paper depth shadow */
+            box-shadow: 
+                0 1px 1px rgba(0, 0, 0, 0.12), 
+                0 8px 16px -4px rgba(66, 32, 64, 0.18),
+                inset 0 -10px 20px -10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Peeling Curled Corner Shadow Effect (Bottom-Right Lift) */
+        .papery-note::after {
+            content: "";
+            position: absolute;
+            right: 8px;
+            bottom: 6px;
+            width: 50%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.25);
+            box-shadow: 0 10px 14px rgba(0, 0, 0, 0.35);
+            transform: skew(8deg) rotate(5deg);
+            z-index: -1;
+            transition: all 0.35s ease;
+        }
+
+        /* Hover Interaction: Paper Lifts Up */
+        .papery-note:hover {
+            transform: translateY(-10px) rotate(0deg) scale(1.03) !important;
+            box-shadow: 
+                0 1px 2px rgba(0, 0, 0, 0.1), 
+                0 20px 28px -6px rgba(66, 32, 64, 0.28),
+                inset 0 -10px 20px -10px rgba(0, 0, 0, 0.02);
+            z-index: 30;
+        }
+
+        .papery-note:hover::after {
+            box-shadow: 0 16px 20px rgba(0, 0, 0, 0.45);
+            right: 12px;
+            bottom: 10px;
+        }
+
+        /* Color variations with subtle organic paper tones */
+        .note-blush { background-color: #F0DDD6; }
+        .note-mint { background-color: #D2E0D3; }
+        .note-sage { background-color: #B2C7C3; }
+        .note-coral { background-color: #F2C3B9; }
+        .note-taupe { background-color: #D6CBBF; }
+        .note-parchment { background-color: #EBDCD7; }
+ 
