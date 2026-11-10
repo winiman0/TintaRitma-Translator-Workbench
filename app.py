@@ -7,7 +7,7 @@ from google.genai import types
 load_dotenv()
 
 # Serve static assets (CSS/JS) directly from src/ root
-app = Flask(__name__, static_folder='.', static_url_path='')
+app = Flask(__name__, template_folder='templates', static_folder='.')
 @app.route("/")
 def gallery():
     return render_template("gallery.html")
