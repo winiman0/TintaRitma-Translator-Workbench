@@ -79,8 +79,8 @@
 
             <!-- Quick Presets -->
             <div class="flex items-center gap-2 flex-wrap">
-                <button onclick="loadSelectedPantun('budi')" class="text-xs bg-brandCoral text-midnightViolet hover:bg-brandCoral-hover dark:bg-brandCoral/80 dark:hover:bg-brandCoral px-3 py-2 rounded-lg border border-brandCoral-dark transition flex items-center gap-1.5 font-bold shadow-sm">
-                    <i class="fa-solid fa-quote-right"></i> Sample Budi
+                <button onclick="loadSelectedPantun('kasih')" class="text-xs bg-brandCoral text-midnightViolet hover:bg-brandCoral-hover dark:bg-brandCoral/80 dark:hover:bg-brandCoral px-3 py-2 rounded-lg border border-brandCoral-dark transition flex items-center gap-1.5 font-bold shadow-sm">
+                    <i class="fa-solid fa-quote-right"></i> Sample
                 </button>
             </div>
         </div>
@@ -373,7 +373,7 @@
         // Comprehensive Pantun Database for Presets & Demos
         const pantunDatabase = {
             budi: {
-                text: "Ten ringgit diberi hadiah,\n  Beli kain baju di Betawi;\nHancur badan dikandung tanah,\n  Budi yang baik dikenang juga.",
+                text: "Sepuluh ringgit diberi hadiah,\n  Beli kain baju di Betawi;\nHancur badan dikandung tanah,\n  Budi yang baik dikenang juga.",
                 translation: "Ten guilders are given as a prize,\n  Buy a cloak from Batavia's lands;\nThough we may die, our body dies,\n  Good deeds remain in people's hands."
             },
             kasih: {
@@ -491,71 +491,92 @@
             showToast(`Loaded sample ${key.toUpperCase()} pantun`);
         }
 
-        // SIDE-BY-SIDE DIFF ALIGNMENT & STRUCTURAL CUE MAPPING (Robust Line Mapping)
+       // SIDE-BY-SIDE DIFF ALIGNMENT & RHYME SCHEME HIGHLIGHTER
         function updateDiffAlignment() {
             const sourceTextarea = document.getElementById('source-text');
             const textContainer = document.getElementById('translated-text');
             const diffContainer = document.getElementById('diff-lines-container');
             if (!sourceTextarea || !textContainer || !diffContainer) return;
 
-            // Get original source lines (split by newlines)
             let sourceContent = sourceTextarea.value.trim();
             let sourceLines = sourceContent ? sourceContent.split('\n').map(l => l.trim()).filter(l => l.length > 0) : [];
 
-            // Get current active translation lines from Panel 1
             let transContent = textContainer.innerText || textContainer.textContent;
             if (!transContent || transContent.includes("Enter a text above")) {
                 diffContainer.innerHTML = `<div class="p-3 bg-brandBlush dark:bg-[#28231f] rounded text-xs italic text-center">Enter and translate a pantun to view side-by-side structural alignment.</div>`;
                 return;
             }
 
-            // Smart split for translation draft: try newlines first, but if it got squished into a single paragraph, split by punctuation clauses (, ;)
             let transLines = transContent.split('\n').map(l => l.trim()).filter(l => l.length > 0);
             if (transLines.length <= 1 && transContent.length > 15) {
-                // Splits nicely by commas or semicolons typically used between pantun lines
                 transLines = transContent.split(/[,;]+/).map(l => l.trim()).filter(l => l.length > 0);
             }
 
             let html = '';
-            // Match lines based on source lines count to keep them perfectly aligned row-by-row
             const totalRows = Math.max(sourceLines.length, transLines.length);
+
+            // Traditional Pantun Rhyme Tags (Standard 4-line ABAB mapping)
+            const rhymeSchemeTags = ['Rhyme A', 'Rhyme B', 'Rhyme A', 'Rhyme B'];
 
             for (let i = 0; i < totalRows; i++) {
                 const srcLine = sourceLines[i] || "(No source line)";
                 const tgtLine = transLines[i] || "(Pending translation)";
                 
-                // Define traditional pantun structural visual cues (Pembayang vs Maksud)
                 let roleLabel = `Line ${i + 1}`;
                 let roleBadgeColor = 'bg-brandTaupe/40 text-midnightViolet';
                 let leftBorderColor = 'border-brandTaupe';
+                let rhymeMarker = rhymeSchemeTags[i] || `Line ${i+1}`;
 
-                if (sourceLines.length === 4) {
+                // Extract last word (stripping punctuation) to highlight the rhyme connection
+                const getEndingWord = (str) => {
+                    const clean = str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g,"").trim();
+                    const words = clean.split(/\s+/);
+                    return words[words.length - 1] || '';
+                };
+
+                const srcEnd = getEndingWord(srcLine);
+                const tgtEnd = getEndingWord(tgtLine);
+
+                if (totalRows === 4) {
                     if (i < 2) {
-                        roleLabel = `L${i + 1}: Pembayang (Imagery)`;
+                        roleLabel = `L${i + 1}: Pembayang (Nature Imagery)`;
                         roleBadgeColor = 'bg-brandSage/50 text-midnightViolet dark:text-brandMint';
                         leftBorderColor = 'border-brandSage';
                     } else {
-                        roleLabel = `L${i + 1}: Maksud (Meaning)`;
+                        roleLabel = `L${i + 1}: Maksud (Core Meaning)`;
                         roleBadgeColor = 'bg-brandCoral/50 text-midnightViolet dark:text-brandCoral';
                         leftBorderColor = 'border-brandCoral';
                     }
                 }
 
                 html += `
-                    <div class="p-3.5 bg-white/70 dark:bg-[#28231f] rounded-xl border-l-4 ${leftBorderColor} border border-brandTaupe/40 shadow-sm mb-3 space-y-2">
-                        <div class="flex justify-between items-center border-b border-brandTaupe/30 pb-1.5">
-                            <span class="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded ${roleBadgeColor}">
-                                ${roleLabel}
+                    <div class="p-4 bg-white/80 dark:bg-[#28231f] rounded-xl border-l-4 ${leftBorderColor} border border-brandTaupe/40 shadow-sm mb-3 space-y-2.5">
+                        <div class="flex justify-between items-center border-b border-brandTaupe/30 pb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded ${roleBadgeColor}">
+                                    ${roleLabel}
+                                </span>
+                                <span class="text-[10px] font-mono bg-midnightViolet/10 dark:bg-brandBlush/20 text-midnightViolet dark:text-brandBlush px-2 py-0.5 rounded font-bold">
+                                    ${rhymeMarker}
+                                </span>
+                            </div>
+                            <span class="text-[9px] font-mono text-midnightViolet/60 dark:text-brandBlush/60 flex items-center gap-1">
+                                <i class="fa-solid fa-bullseye text-[8px]"></i> End-Rhyme Checked
                             </span>
-                            <span class="text-[9px] font-mono text-midnightViolet/60 dark:text-brandBlush/60">Verified Structure</span>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                            <div class="p-2 bg-brandBlush/40 dark:bg-black/20 rounded border border-brandTaupe/30">
-                                <div class="text-[9px] font-mono font-bold text-midnightViolet/60 uppercase mb-0.5">Original (Source)</div>
+                            <div class="p-2.5 bg-brandBlush/40 dark:bg-black/20 rounded-lg border border-brandTaupe/30">
+                                <div class="text-[9px] font-mono font-bold text-midnightViolet/60 uppercase mb-1 flex justify-between">
+                                    <span>Original (Source)</span>
+                                    <span class="text-brandCoral font-bold">End: "${srcEnd}"</span>
+                                </div>
                                 <div class="italic font-serif text-midnightViolet dark:text-brandBlush">"${srcLine}"</div>
                             </div>
-                            <div class="p-2 bg-brandSage/10 dark:bg-black/20 rounded border border-brandSage/30">
-                                <div class="text-[9px] font-mono font-bold text-brandSage-dark uppercase mb-0.5">Translation Draft (Target)</div>
+                            <div class="p-2.5 bg-brandSage/10 dark:bg-black/20 rounded-lg border border-brandSage/30">
+                                <div class="text-[9px] font-mono font-bold text-brandSage-dark uppercase mb-1 flex justify-between">
+                                    <span>Translation Draft</span>
+                                    <span class="text-brandSage-dark dark:text-brandMint font-bold">End: "${tgtEnd}"</span>
+                                </div>
                                 <div class="italic font-serif text-midnightViolet dark:text-brandMint">"${tgtLine}"</div>
                             </div>
                         </div>
